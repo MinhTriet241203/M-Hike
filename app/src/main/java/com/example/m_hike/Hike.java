@@ -1,14 +1,14 @@
 package com.example.m_hike;
 
-import java.sql.Date;
-
 public class Hike {
     String description, image, date, location, name;
     Integer difficulty;
     Float lat, lng, length;
     Boolean parking;
 
-    Hike(){}
+    public Hike() {
+
+    }
 
     public Hike(String description, String image, String date, String location, String name, Integer difficulty, Float lat, Float lng, Float length, Boolean parking) {
         this.description = description;

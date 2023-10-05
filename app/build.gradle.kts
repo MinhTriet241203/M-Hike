@@ -1,3 +1,5 @@
+var useIntlJsc = false
+
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
@@ -10,6 +12,7 @@ android {
     defaultConfig {
         applicationId = "com.example.m_hike"
         minSdk = 33
+        //noinspection OldTargetApi
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -26,6 +29,11 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    buildToolsVersion = "33.0.1"
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 
@@ -46,4 +54,10 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    if (useIntlJsc) {
+        implementation("org.webkit:android-jsc-intl:+")
+    } else {
+        implementation("org.webkit:android-jsc:+")
+    }
 }
