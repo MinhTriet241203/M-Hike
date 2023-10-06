@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         //Setup bottom navigation bar
         helper.replaceFragment(new HomeFragment(), null, "home");
         binding.botNavView.setBackground(null);
+        //Change fragment
         binding.botNavView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if(itemId == R.id.home) {
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         });
         binding.fab.setOnClickListener(view -> showBottomDialog());
 
+        //Back button
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {

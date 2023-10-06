@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 public class HikeFragment extends Fragment {
 
-
+    Helper helper = new Helper(getParentFragmentManager());
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
