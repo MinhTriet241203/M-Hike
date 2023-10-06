@@ -8,19 +8,23 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.m_hike.databinding.ActivityMainBinding;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,8 +37,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
-    FirebaseDatabase db = FirebaseDatabase.getInstance();
-    DatabaseReference ref = db.getReference("hike");
+    Helper helper = new Helper(getSupportFragmentManager());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,26 +50,61 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         //Setup bottom navigation bar
-        replaceFragment(new HomeFragment());
+        helper.replaceFragment(new HomeFragment(), null, "home");
         binding.botNavView.setBackground(null);
         binding.botNavView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if(itemId == R.id.home) {
-                replaceFragment(new HomeFragment());
+                helper.replaceFragment(new HomeFragment(), null, "home");
             } else if (itemId == R.id.hike) {
-                replaceFragment(new HikeFragment());
+                helper.replaceFragment(new HikeFragment(), null, "hike");
             } else if (itemId == R.id.account) {
-                replaceFragment(new AccountFragment());
+                helper.replaceFragment(new AccountFragment(), null, "account");
             } else if (itemId == R.id.settings) {
-                replaceFragment(new SettingsFragment());
+                helper.replaceFragment(new SettingsFragment(), null, "settings");
             } else {
-                replaceFragment(new HomeFragment());
+                helper.replaceFragment(new HomeFragment(), null, "home");
             }
             return true;
         });
         binding.fab.setOnClickListener(view -> showBottomDialog());
 
-        readDatabase();
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                int count = helper.getFragManager().getBackStackEntryCount();
+                if(count == 0) {
+                } else {
+                    String lastFragment = helper.getFragManager().getBackStackEntryAt(count-2).getName();
+                    helper.getFragManager().popBackStack();
+                    switch (Objects.requireNonNull(lastFragment)){
+                        case "home":
+                            helper.replaceFragment(new HomeFragment(), null, "home");
+                            binding.botNavView.setSelectedItemId(R.id.home);
+                            break;
+                        case "hike":
+                            helper.replaceFragment(new HikeFragment(), null, "hike");
+                            binding.botNavView.setSelectedItemId(R.id.hike);
+                            break;
+                        case "account":
+                            helper.replaceFragment(new AccountFragment(), null, "account");
+                            binding.botNavView.setSelectedItemId(R.id.account);
+                            break;
+                        case "settings":
+                            helper.replaceFragment(new SettingsFragment(), null, "settings");
+                            binding.botNavView.setSelectedItemId(R.id.settings);
+                            break;
+                        default:
+                            helper.replaceFragment(new HomeFragment(), null, "home");
+                            binding.botNavView.setSelectedItemId(R.id.home);
+                            break;
+                    }
+                }
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
+
+        helper.readDatabase();
     }
 
     private void showBottomDialog() {
@@ -80,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
         hike.setOnClickListener(view -> {
             dialog.dismiss();
-            replaceFragment(new HikeFragment());
+            helper.replaceFragment(new HikeFragment(), null, "hike");
         });
 
         observation.setOnClickListener(view -> {
@@ -95,30 +133,5 @@ public class MainActivity extends AppCompatActivity {
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
         dialog.show();
-    }
-
-    private void replaceFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frameLayout, fragment);
-        fragmentTransaction.commit();
-    }
-
-    public void readDatabase() {
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                Log.d(TAG, "Value is: " + map);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Failed to read value
-                Log.d(TAG, "Failed to read value.", error.toException());
-            }
-        });
     }
 }
