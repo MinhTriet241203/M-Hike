@@ -19,7 +19,10 @@
     <string name="hike_length">Hike Length</string>
     <string name="choose_difficulty_level">Choose difficulty level</string>
     <string name="hike_difficulty">Hike Difficulty</string>
-    
+    <string name="hike_description">Hike Description</string>
+    <string name="hike_diffculty">Hike Diffculty</string>
+    <string name="required_equipments">Required Equipments</string>
+
     <string-array name="difficulty">
         <item>1 - Easy</item>
         <item>2 - Moderate</item>
