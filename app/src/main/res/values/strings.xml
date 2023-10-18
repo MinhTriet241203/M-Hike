@@ -12,4 +12,19 @@
     <string name="clear">Clear</string>
     <string name="hiking">Hiking</string>
     <string name="add_photo">Add photo</string>
+    <string name="parking_available">Parking Available?</string>
+    <string name="hike_date">Hike Date</string>
+    <string name="hike_location">Hike Location</string>
+    <string name="hike_name">Hike Name</string>
+    <string name="hike_length">Hike Length</string>
+    <string name="choose_difficulty_level">Choose difficulty level</string>
+    <string name="hike_difficulty">Hike Difficulty</string>
+    
+    <string-array name="difficulty">
+        <item>1 - Easy</item>
+        <item>2 - Moderate</item>
+        <item>3 - Moderately Strenuous</item>
+        <item>4 - Strenuous</item>
+        <item>5 - Very Difficult</item>
+    </string-array>
 </resources>

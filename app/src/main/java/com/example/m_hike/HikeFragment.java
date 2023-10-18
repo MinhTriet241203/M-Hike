@@ -9,12 +9,15 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 
-import com.example.m_hike.databinding.ActivityMainBinding;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class HikeFragment extends Fragment {
+
+    AutoCompleteTextView difficultyInput;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -27,6 +30,9 @@ public class HikeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        difficultyInput = requireView().findViewById(R.id.difficultyInput);
 
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(requireContext().getApplicationContext(), R.layout.drop_down_item, getResources().getStringArray(R.array.difficulty));
+        difficultyInput.setAdapter(arrayAdapter);
     }
 }

@@ -2,7 +2,6 @@ var useIntlJsc = false
 
 plugins {
     id("com.android.application")
-    id("com.google.gms.google-services")
 }
 
 android {
@@ -43,13 +42,8 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
-    implementation("com.google.firebase:firebase-database:20.2.2")
     implementation("de.hdodenhof:circleimageview:3.1.0")
-    // FirebaseUI for Firebase Realtime Database
-    implementation("com.firebaseui:firebase-ui-database:8.0.2")
-    implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("androidx.recyclerview:recyclerview:1.3.1")
-    implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.activity:activity:1.7.2")
 
     testImplementation("junit:junit:4.13.2")

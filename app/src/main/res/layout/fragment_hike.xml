@@ -16,10 +16,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="24dp"
             android:text="@string/create_new_hike"
             android:textColor="@color/white"
-            android:textSize="24dp"
+            android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,11 +29,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="12dp"
             android:layout_marginEnd="32dp"
-            android:hint="Hike Name"
+            android:hint="@string/hike_name"
             app:boxStrokeWidth="2dp"
-            app:endIconDrawable="@drawable/ic_baseline_clear_text"
+            app:counterEnabled="true"
+            app:counterTextColor="@color/white"
             app:endIconMode="clear_text"
             app:endIconTint="@color/white"
             app:helperText="* Required"
@@ -49,6 +50,7 @@
                 android:id="@+id/nameInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="text|textCapWords"
                 android:textColorHint="@color/white" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -59,10 +61,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="12dp"
             android:layout_marginEnd="32dp"
-            android:hint="Hike Location"
+            android:hint="@string/hike_location"
             app:boxStrokeWidth="2dp"
+            app:counterEnabled="true"
+            app:counterTextColor="@color/white"
             app:endIconDrawable="@drawable/ic_baseline_clear_text"
             app:endIconMode="clear_text"
             app:endIconTint="@color/white"
@@ -79,18 +83,64 @@
                 android:id="@+id/locationInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="text|textCapWords"
                 android:textColorHint="@color/white" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
+        <TextView
+            android:id="@+id/dateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/hike_date"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/locationInputLayout" />
+
+        <DatePicker
+            android:id="@+id/datePicker"
+            android:layout_width="0dp"
+            android:layout_height="160dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="32dp"
+            android:calendarTextColor="@color/white"
+            android:calendarViewShown="false"
+            android:datePickerMode="spinner"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dateText" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/parkingSwitch"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="32dp"
+            android:text="@string/parking_available"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/datePicker"
+            app:switchMinWidth="60dp"
+            app:thumbTint="@drawable/switch_thumb"
+            app:trackTint="@drawable/switch_track" />
+
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/dateInputLayout"
+            android:id="@+id/lengthInputLayout"
             style="@style/TextField"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="12dp"
             android:layout_marginEnd="32dp"
-            android:hint="Hike Location"
+            android:hint="@string/hike_length"
             app:boxStrokeWidth="2dp"
             app:endIconDrawable="@drawable/ic_baseline_clear_text"
             app:endIconMode="clear_text"
@@ -102,14 +152,18 @@
             app:hintEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/nameInputLayout">
+            app:layout_constraintTop_toBottomOf="@+id/parkingSwitch">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/locationInput"
+                android:id="@+id/lengthInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="number|numberDecimal"
                 android:textColorHint="@color/white" />
+
         </com.google.android.material.textfield.TextInputLayout>
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,14 +1,10 @@
 package com.example.m_hike;
 
-import static android.content.ContentValues.TAG;
-
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
@@ -16,22 +12,10 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.m_hike.databinding.ActivityMainBinding;
-import com.google.android.material.navigation.NavigationBarView;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.Map;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -76,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
             public void handleOnBackPressed() {
                 int count = helper.getFragManager().getBackStackEntryCount();
                 if(count == 0) {
+                    Toast.makeText(MainActivity.this, "No previous fragment to go back", Toast.LENGTH_SHORT).show();
                 } else {
                     String lastFragment = helper.getFragManager().getBackStackEntryAt(count-2).getName();
                     helper.getFragManager().popBackStack();
@@ -105,8 +90,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         getOnBackPressedDispatcher().addCallback(this, callback);
-
-        helper.readDatabase();
     }
 
     private void showBottomDialog() {
