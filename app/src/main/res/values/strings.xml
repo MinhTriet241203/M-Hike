@@ -22,6 +22,16 @@
     <string name="hike_description">Hike Description</string>
     <string name="hike_diffculty">Hike Diffculty</string>
     <string name="required_equipments">Required Equipments</string>
+    <string name="trekking_poles">Trekking Poles</string>
+    <string name="satellite_communicator">Satellite Communicator</string>
+    <string name="headlamp">Headlamp</string>
+    <string name="water_filtration_system">Water Filtration System</string>
+    <string name="gps_map">GPS Map</string>
+    <string name="battery_backup">Battery Backup</string>
+    <string name="other">Other...</string>
+    <string name="other_equipments">Other Equipments</string>
+    <string name="number_of_participants">Number of Participants</string>
+    <string name="hike_duration">Hike Duration</string>
 
     <string-array name="difficulty">
         <item>1 - Easy</item>
