@@ -139,9 +139,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/datePicker"
-                app:switchMinWidth="60dp"
-                app:thumbTint="@drawable/switch_thumb"
-                app:trackTint="@drawable/switch_track" />
+                app:switchMinWidth="60dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/lengthInputLayout"
