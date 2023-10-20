@@ -2,6 +2,7 @@ var useIntlJsc = false
 
 plugins {
     id("com.android.application")
+    kotlin("kapt") version "1.9.10"
 }
 
 android {
@@ -38,6 +39,13 @@ android {
 
 dependencies {
 
+    val roomVersion = "2.5.0"
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    annotationProcessor("androidx.room:room-compiler:$roomVersion")
+    // To use Kotlin annotation processing tool (kapt)
+    kapt("androidx.room:room-compiler:$roomVersion")
+
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
@@ -45,6 +53,9 @@ dependencies {
     implementation("de.hdodenhof:circleimageview:3.1.0")
     implementation("androidx.recyclerview:recyclerview:1.3.1")
     implementation("androidx.activity:activity:1.7.2")
+
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -64,4 +75,8 @@ dependencies {
     } else {
         implementation("org.webkit:android-jsc:+")
     }
+}
+
+fun kapt(configure: String) {
+
 }

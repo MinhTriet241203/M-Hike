@@ -49,6 +49,7 @@
                 app:helperTextTextColor="@android:color/holo_orange_light"
                 app:hintAnimationEnabled="true"
                 app:hintEnabled="true"
+                app:errorEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/hikeTitle">
@@ -84,6 +85,7 @@
                 app:helperTextTextColor="@android:color/holo_orange_light"
                 app:hintAnimationEnabled="true"
                 app:hintEnabled="true"
+                app:errorEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/nameInputLayout">
@@ -159,6 +161,7 @@
                 app:helperTextTextColor="@android:color/holo_orange_light"
                 app:hintAnimationEnabled="true"
                 app:hintEnabled="true"
+                app:errorEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/parkingSwitch"
@@ -254,7 +257,7 @@
                 app:layout_constraintTop_toBottomOf="@id/descriptionInputLayout" />
 
             <CheckBox
-                android:id="@+id/sateliteCB"
+                android:id="@+id/satelliteCB"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:layout_marginStart="32dp"
@@ -277,7 +280,7 @@
                 android:textColor="@color/white"
                 android:buttonTint="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sateliteCB" />
+                app:layout_constraintTop_toBottomOf="@+id/satelliteCB" />
 
             <CheckBox
                 android:id="@+id/headlampCB"
@@ -360,6 +363,7 @@
                 app:endIconDrawable="@drawable/ic_baseline_clear_text"
                 app:endIconMode="clear_text"
                 app:endIconTint="@color/white"
+                app:errorEnabled="true"
                 app:hintAnimationEnabled="true"
                 app:hintEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -387,12 +391,16 @@
                 android:layout_marginEnd="32dp"
                 android:hint="@string/number_of_participants"
                 android:visibility="visible"
+                app:helperText="* Required"
+                app:helperTextEnabled="true"
+                app:helperTextTextColor="@android:color/holo_orange_light"
                 app:boxStrokeWidth="2dp"
                 app:endIconDrawable="@drawable/ic_baseline_clear_text"
                 app:endIconMode="clear_text"
                 app:endIconTint="@color/white"
                 app:hintAnimationEnabled="true"
                 app:hintEnabled="true"
+                app:errorEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/otherEquipmentInputLayout"
@@ -418,12 +426,16 @@
                 android:layout_marginEnd="32dp"
                 android:hint="@string/hike_duration"
                 android:visibility="visible"
+                app:helperText="* Required"
+                app:helperTextEnabled="true"
+                app:helperTextTextColor="@android:color/holo_orange_light"
                 app:boxStrokeWidth="2dp"
                 app:endIconDrawable="@drawable/ic_baseline_clear_text"
                 app:endIconMode="clear_text"
                 app:endIconTint="@color/white"
                 app:hintAnimationEnabled="true"
                 app:hintEnabled="true"
+                app:errorEnabled="true"
                 app:suffixText="hours"
                 app:suffixTextColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -440,6 +452,50 @@
                     android:textColorHint="@color/white" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/saveBtn"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="32dp"
+                android:backgroundTint="@color/white"
+                android:textColor="@color/lavender"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="@string/save"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/durationInputLayout" />
+
+            <Button
+                android:id="@+id/cancelBtn"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="@color/white"
+                android:text="@string/cancel"
+                android:textColor="@color/lavender"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/durationInputLayout" />
+
+            <Button
+                android:id="@+id/observationBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="32dp"
+                android:backgroundTint="@color/white"
+                android:text="@string/add_observation"
+                android:textColor="@color/lavender"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cancelBtn" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

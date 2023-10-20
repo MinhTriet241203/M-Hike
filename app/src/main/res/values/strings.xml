@@ -28,10 +28,12 @@
     <string name="water_filtration_system">Water Filtration System</string>
     <string name="gps_map">GPS Map</string>
     <string name="battery_backup">Battery Backup</string>
-    <string name="other">Other...</string>
+    <string name="other">Other…</string>
     <string name="other_equipments">Other Equipments</string>
     <string name="number_of_participants">Number of Participants</string>
     <string name="hike_duration">Hike Duration</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
 
     <string-array name="difficulty">
         <item>1 - Easy</item>
@@ -40,4 +42,6 @@
         <item>4 - Strenuous</item>
         <item>5 - Very Difficult</item>
     </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
