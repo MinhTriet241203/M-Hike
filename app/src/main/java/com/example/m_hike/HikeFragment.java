@@ -1,13 +1,6 @@
 package com.example.m_hike;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.fragment.app.Fragment;
-import androidx.room.util.StringUtil;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +11,18 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HikeFragment extends Fragment {
 
@@ -35,6 +36,7 @@ public class HikeFragment extends Fragment {
     CheckBox satelliteCB, polesCB, headlampCB, waterCB, gpsCB, batteryCB, otherCB;
     Button saveBtn, cancelBtn, observationBtn;
     MHikeDatabase db;
+    ExecutorService executors = Executors.newSingleThreadExecutor();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,7 +71,7 @@ public class HikeFragment extends Fragment {
         parkingSwitch = requireView().findViewById(R.id.parkingSwitch);
         //Spinner
         difficultySpinner = requireView().findViewById(R.id.difficultySpinner);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(requireContext().getApplicationContext(), R.layout.drop_down_item, getResources().getStringArray(R.array.difficulty));
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(requireContext().getApplicationContext(), R.layout.drop_down_item, getResources().getStringArray(R.array.difficulty));
         difficultySpinner.setAdapter(arrayAdapter);
         //Checkbox
         satelliteCB = requireView().findViewById(R.id.satelliteCB);
@@ -140,7 +142,7 @@ public class HikeFragment extends Fragment {
                 int participants = Integer.parseInt(Objects.requireNonNull(participantsInput.getText()).toString());
                 double duration = Double.parseDouble(Objects.requireNonNull(durationInput.getText()).toString());
                 Hike hike = new Hike(name, location, date, parking, length, difficulty, description, equipments, participants, duration);
-                db.hikeDao().insertHike(hike);
+                insertHike(hike);
             } else {
                 if(isEmpty(nameInput))
                     nameInputLayout.setError("Please enter hike name");
@@ -155,6 +157,8 @@ public class HikeFragment extends Fragment {
             }
         });
 
+        cancelBtn.setOnClickListener(v -> getAllHikes());
+
 //        locationInput.setOnFocusChangeListener((v, hasFocus) -> {
 //            if(hasFocus) {
 //                Intent i = new Intent(requireContext(), MapActivity.class);
@@ -165,5 +169,17 @@ public class HikeFragment extends Fragment {
 
     private boolean isEmpty(EditText input) {
         return input.getText().toString().trim().length() == 0;
+    }
+
+    private void insertHike(Hike hike) {
+        Runnable insertHike = () -> db.hikeDao().insertHike(hike);
+        executors.execute(insertHike);
+    }
+
+    private void getAllHikes() {
+        Runnable getAllHikes = () -> {
+            List<Hike> hikeList = db.hikeDao().getAllHikes();
+        };
+        executors.execute(getAllHikes);
     }
 }
