@@ -1,6 +1,7 @@
 package com.example.m_hike;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -179,6 +180,7 @@ public class HikeFragment extends Fragment {
     private void getAllHikes() {
         Runnable getAllHikes = () -> {
             List<Hike> hikeList = db.hikeDao().getAllHikes();
+            Log.d("dbOperations", hikeList.toString());
         };
         executors.execute(getAllHikes);
     }

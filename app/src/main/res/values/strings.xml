@@ -20,7 +20,6 @@
     <string name="choose_difficulty_level">Choose difficulty level</string>
     <string name="hike_difficulty">Hike Difficulty</string>
     <string name="hike_description">Hike Description</string>
-    <string name="hike_diffculty">Hike Diffculty</string>
     <string name="required_equipments">Required Equipments</string>
     <string name="trekking_poles">Trekking Poles</string>
     <string name="satellite_communicator">Satellite Communicator</string>
@@ -44,4 +43,5 @@
     </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="observation">Observation</string>
 </resources>
