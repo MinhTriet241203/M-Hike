@@ -1,8 +1,11 @@
 package com.example.m_hike;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -13,6 +16,15 @@ public interface HikeDao {
     void insertHike(Hike hike);
 
     @Query("SELECT * FROM hikes")
-    List<Hike> getAllHikes();
+    LiveData<List<Hike>> getAllHikes();
+
+    @Update
+    void updateHike(Hike hike);
+
+    @Delete
+    void deleteHike(Hike hike);
+
+    @Query("DELETE FROM hikes")
+    void resetDatabase();
 
 }

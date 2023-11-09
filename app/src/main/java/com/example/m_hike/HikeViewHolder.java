@@ -8,13 +8,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class MyViewHolder extends RecyclerView.ViewHolder {
+public class HikeViewHolder extends RecyclerView.ViewHolder {
 
     ImageView imageView;
     TextView nameText, locationText, dateText;
     RelativeLayout itemLayout;
 
-    public MyViewHolder(@NonNull View itemView) {
+    public HikeViewHolder(@NonNull View itemView) {
         super(itemView);
 
         itemLayout = itemView.findViewById(R.id.itemLayout);

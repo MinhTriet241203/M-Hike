@@ -13,11 +13,14 @@ public abstract class MHikeDatabase extends RoomDatabase {
 
     private static volatile MHikeDatabase INSTANCE;
 
-    static MHikeDatabase getInstance(Context context) {
+    public static synchronized MHikeDatabase getInstance(Context context) {
         if(INSTANCE == null) {
             synchronized (MHikeDatabase.class) {
                 if(INSTANCE == null) {
-                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(), MHikeDatabase.class, "M-Hike").build();
+                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
+                                    MHikeDatabase.class, "M-Hike")
+                                    .fallbackToDestructiveMigration()
+                                    .build();
                 }
             }
         }

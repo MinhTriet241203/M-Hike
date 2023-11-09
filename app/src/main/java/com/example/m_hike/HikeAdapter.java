@@ -4,8 +4,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,26 +18,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
-public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
+public class HikeAdapter extends RecyclerView.Adapter<HikeViewHolder> {
 
     Context context;
-    List<Hike> hikeList;
+    private List<Hike> hikeList = new ArrayList<>();
 
-    public MyAdapter(Context context, List<Hike> hikeList) {
+    public HikeAdapter(Context context) {
         this.context = context;
-        this.hikeList = hikeList;
     }
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new MyViewHolder(LayoutInflater.from(context).inflate(R.layout.item_view, parent, false));
+    public HikeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new HikeViewHolder(LayoutInflater.from(context).inflate(R.layout.item_view, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull HikeViewHolder holder, int position) {
         //TODO: Set show image
         holder.nameText.setText(hikeList.get(position).getHikeName());
         holder.locationText.setText(hikeList.get(position).getLocation());
@@ -44,6 +48,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
     @Override
     public int getItemCount() {
         return hikeList.size();
+    }
+
+    public void setHikeList(List<Hike> hikes) {
+        this.hikeList = hikes;
+        notifyDataSetChanged();
     }
 
     private Bitmap loadFromInternalStorage(String fileName) {

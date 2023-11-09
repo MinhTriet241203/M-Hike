@@ -16,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -158,7 +160,18 @@ public class HikeFragment extends Fragment {
             }
         });
 
-        cancelBtn.setOnClickListener(v -> getAllHikes());
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LiveData<List<Hike>> hikeList = db.hikeDao().getAllHikes();
+                hikeList.observe(getViewLifecycleOwner(), new Observer<List<Hike>>() {
+                    @Override
+                    public void onChanged(List<Hike> hikes) {
+                        Log.d("dbOperations", "changed: " + hikes.toString());
+                    }
+                });
+            }
+        });
 
 //        locationInput.setOnFocusChangeListener((v, hasFocus) -> {
 //            if(hasFocus) {
@@ -175,13 +188,5 @@ public class HikeFragment extends Fragment {
     private void insertHike(Hike hike) {
         Runnable insertHike = () -> db.hikeDao().insertHike(hike);
         executors.execute(insertHike);
-    }
-
-    private void getAllHikes() {
-        Runnable getAllHikes = () -> {
-            List<Hike> hikeList = db.hikeDao().getAllHikes();
-            Log.d("dbOperations", hikeList.toString());
-        };
-        executors.execute(getAllHikes);
     }
 }

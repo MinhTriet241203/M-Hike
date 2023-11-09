@@ -1,6 +1,7 @@
 package com.example.m_hike;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -18,8 +22,7 @@ public class HomeFragment extends Fragment {
 
     RecyclerView hikeRecycler;
     MHikeDatabase db;
-    ExecutorService executors = Executors.newSingleThreadExecutor();
-    List<Hike> hikeList;
+    LiveData<List<Hike>> hikeList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -32,12 +35,15 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        hikeRecycler = requireView().findViewById(R.id.hikeRecycler);
         db = MHikeDatabase.getInstance(requireActivity().getApplicationContext());
-    }
+        hikeList = db.hikeDao().getAllHikes();
 
-    private void getAllHikes() {
-        Runnable getAllHikes = () -> hikeList = db.hikeDao().getAllHikes();
-        executors.execute(getAllHikes);
+        hikeRecycler = requireView().findViewById(R.id.hikeRecycler);
+        hikeRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
+        HikeAdapter adapter = new HikeAdapter(requireContext());
+        hikeRecycler.setAdapter(adapter);
+
+        hikeList.observe(getViewLifecycleOwner(), adapter::setHikeList);
+
     }
 }
