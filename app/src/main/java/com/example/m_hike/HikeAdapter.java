@@ -25,9 +25,11 @@ public class HikeAdapter extends RecyclerView.Adapter<HikeViewHolder> {
 
     Context context;
     private List<Hike> hikeList = new ArrayList<>();
+    private final SelectListener listener;
 
-    public HikeAdapter(Context context) {
+    public HikeAdapter(Context context, SelectListener listener) {
         this.context = context;
+        this.listener = listener;
     }
 
     @NonNull
@@ -43,6 +45,7 @@ public class HikeAdapter extends RecyclerView.Adapter<HikeViewHolder> {
         holder.locationText.setText(hikeList.get(position).getLocation());
         holder.dateText.setText(hikeList.get(position).getDate());
         holder.itemLayout.startAnimation(AnimationUtils.loadAnimation(holder.itemView.getContext(), R.anim.slide_in_diagonal));
+        holder.itemLayout.setOnClickListener(v -> listener.onItemClicked(hikeList.get(position)));
     }
 
     @Override
