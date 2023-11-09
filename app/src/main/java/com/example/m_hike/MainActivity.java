@@ -98,17 +98,11 @@ public class MainActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.bottom_sheet_layout);
 
         LinearLayout hike = dialog.findViewById(R.id.layoutNewHike);
-        LinearLayout observation = dialog.findViewById(R.id.layoutObservation);
         ImageView cancelButton = dialog.findViewById(R.id.cancelButton);
 
         hike.setOnClickListener(view -> {
             dialog.dismiss();
             helper.replaceFragment(new HikeFragment(), null, "hike");
-        });
-
-        observation.setOnClickListener(view -> {
-            dialog.dismiss();
-            Toast.makeText(MainActivity.this,"Observation Added",Toast.LENGTH_SHORT).show();
         });
 
         cancelButton.setOnClickListener(view -> dialog.dismiss());

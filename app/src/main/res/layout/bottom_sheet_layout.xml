@@ -70,28 +70,4 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/layoutObservation"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp">
-
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_add_photo"
-            android:contentDescription="@string/add_photo" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/add_observation"
-            android:textColor="@color/lavender"
-            android:layout_marginStart="10dp"
-            android:textSize="18sp"/>
-
-    </LinearLayout>
-
 </LinearLayout>

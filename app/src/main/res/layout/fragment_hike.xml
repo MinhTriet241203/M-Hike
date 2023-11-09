@@ -13,19 +13,21 @@
         android:layout_marginBottom="90dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/inflate_area"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/hikeTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
+                android:layout_marginStart="5dp"
                 android:layout_marginTop="24dp"
                 android:text="@string/create_new_hike"
                 android:textColor="@color/white"
                 android:textSize="24sp"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/deleteBtn"
+                app:layout_constraintStart_toEndOf="@id/backBtn"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -119,7 +121,6 @@
                 android:layout_width="0dp"
                 android:layout_height="160dp"
                 android:layout_marginStart="32dp"
-                android:layout_marginTop="0dp"
                 android:layout_marginEnd="32dp"
                 android:calendarTextColor="@color/white"
                 android:calendarViewShown="false"
@@ -134,6 +135,7 @@
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_marginStart="32dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginEnd="32dp"
                 android:text="@string/parking_available"
                 android:textColor="@color/white"
@@ -141,7 +143,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/datePicker"
-                app:switchMinWidth="60dp"/>
+                app:switchMinWidth="60dp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/lengthInputLayout"
@@ -149,19 +151,19 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginEnd="32dp"
                 android:hint="@string/hike_length"
                 app:boxStrokeWidth="2dp"
                 app:endIconDrawable="@drawable/ic_baseline_clear_text"
                 app:endIconMode="clear_text"
                 app:endIconTint="@color/white"
+                app:errorEnabled="true"
                 app:helperText="* Required"
                 app:helperTextEnabled="true"
                 app:helperTextTextColor="@android:color/holo_orange_light"
                 app:hintAnimationEnabled="true"
                 app:hintEnabled="true"
-                app:errorEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/parkingSwitch"
@@ -236,7 +238,7 @@
                     android:id="@+id/descriptionInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text|textMultiLine"
+                    android:inputType="text|textCapWords|textMultiLine"
                     android:textColorHint="@color/white" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -376,7 +378,7 @@
                     android:id="@+id/otherEquipmentInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text|textMultiLine"
+                    android:inputType="text|textCapWords|textMultiLine"
                     android:textColorHint="@color/white" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -496,6 +498,32 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cancelBtn" />
+
+            <ImageButton
+                android:id="@+id/deleteBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="32dp"
+                android:backgroundTint="@color/lavender"
+                android:contentDescription="@string/delete"
+                android:onClick="showPopup"
+                android:src="@drawable/ic_baseline_delete"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/backBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="@color/lavender"
+                android:contentDescription="@string/go_back"
+                android:src="@drawable/ic_baseline_back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

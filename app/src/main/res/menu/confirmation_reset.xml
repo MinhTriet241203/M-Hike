@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/yesItem"
+        android:title="@string/yes_reset"/>
+
+    <item
+        android:id="@+id/noItem"
+        android:title="@string/no_cancel"/>
+
+</menu>

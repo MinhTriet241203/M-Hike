@@ -11,11 +11,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:paddingStart="10dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:paddingEnd="10dp"
+        android:layout_marginStart="10dp"
         app:cardCornerRadius="5dp">
+
+        <TextView
+            android:id="@+id/idText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"/>
 
         <ImageView
             android:id="@+id/imageView"

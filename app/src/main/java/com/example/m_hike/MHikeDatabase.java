@@ -6,10 +6,11 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {Hike.class}, version = 1, exportSchema = false)
+@Database(entities = {Hike.class, Observation.class}, version = 1, exportSchema = false)
 public abstract class MHikeDatabase extends RoomDatabase {
 
     public abstract HikeDao hikeDao();
+    public abstract ObservationDao observationDao();
 
     private static volatile MHikeDatabase INSTANCE;
 

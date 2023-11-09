@@ -33,6 +33,26 @@
     <string name="hike_duration">Hike Duration</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="observation">Observation</string>
+    <string name="update">Update</string>
+    <string name="update2">Update %1$s</string>
+    <string name="delete">Delete</string>
+    <string name="yes_delete">Yes, delete</string>
+    <string name="no_cancel">No, cancel</string>
+    <string name="reset_database">Reset database</string>
+    <string name="yes_reset">Yes, reset</string>
+    <string name="go_back">Go Back</string>
+    <string name="add_new_observation">Add new observation</string>
+    <string name="observation_date">Observation Date</string>
+    <string name="choose_time">Choose time</string>
+    <string name="observation_type">Observation Type</string>
+    <string name="observation_comment">Observation Comment</string>
+    <string name="choose_date">Choose Date</string>
+    <string name="pick_date">Pick Date</string>
+    <string name="pick_time">Pick Time</string>
+    <string name="observation_time">Observation Time</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
 
     <string-array name="difficulty">
         <item>1 - Easy</item>
@@ -41,7 +61,13 @@
         <item>4 - Strenuous</item>
         <item>5 - Very Difficult</item>
     </string-array>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="observation">Observation</string>
+
+    <string-array name="observation_type">
+        <item>Animals sighting</item>
+        <item>Vegetation encounter</item>
+        <item>Weather condition</item>
+        <item>Trails condition</item>
+        <item>Sighting</item>
+    </string-array>
+
 </resources>

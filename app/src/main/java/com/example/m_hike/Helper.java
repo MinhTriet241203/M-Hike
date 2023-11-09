@@ -25,6 +25,7 @@ public class Helper {
 
     public void replaceFragment(Fragment fragment, @Nullable Bundle bundle, String backStack) {
         FragmentTransaction fragmentTransaction = fragManager.beginTransaction();
+        fragment.setArguments(bundle);
         fragmentTransaction.setReorderingAllowed(true).replace(R.id.frameLayout, fragment.getClass(), bundle).addToBackStack(backStack);
         fragmentTransaction.commit();
     }
