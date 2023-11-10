@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lavender">
@@ -50,7 +49,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/dateInputLayout"
         style="@style/TextField"
-        android:layout_width="0dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="12dp"
@@ -105,7 +104,7 @@
 
     <Button
         android:id="@+id/pickDateBtn"
-        android:layout_width="0dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="12dp"
@@ -185,7 +184,9 @@
             android:layout_width="250dp"
             android:layout_height="250dp"
             android:contentDescription="@string/observation"
-            android:src="@drawable/test" />
+            android:src="@drawable/ic_baseline_add_photo"
+            android:tint="@color/white"
+            android:background="@color/lavender"/>
 
     </androidx.cardview.widget.CardView>
 

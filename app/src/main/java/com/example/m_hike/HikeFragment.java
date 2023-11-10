@@ -1,7 +1,14 @@
 package com.example.m_hike;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.ImageDecoder;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -13,6 +20,7 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -24,10 +32,15 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -56,10 +69,18 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
     CheckBox satelliteCB, polesCB, headlampCB, waterCB, gpsCB, batteryCB, otherCB;
     ImageButton deleteBtn, backBtn;
     Button saveBtn, cancelBtn, observationBtn;
-    ConstraintLayout inflate_area;
     MHikeDatabase db;
     ExecutorService executors = Executors.newSingleThreadExecutor();
     Helper helper;
+
+
+    //Observation View
+    ConstraintLayout observationArea;
+    Spinner observationTypeSpinner;
+    EditText dateInput, timeInput, commentInput;
+    ImageView imageView;
+    private boolean image_set = false, new_observation = false;
+    private Bitmap imageBitmap;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -186,6 +207,20 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                     }
                 }
 
+                //Add observation
+                if(new_observation) {
+                    String observationType = observationTypeSpinner.getSelectedItem().toString();
+                    String dateTime = dateInput.getText().toString() + timeInput.getText().toString();
+                    String comment;
+                    if(!isEmpty(commentInput))
+                        comment = commentInput.getText().toString();
+                    if(!image_set) {
+                        Toast.makeText(requireContext(), "Please take an photo", Toast.LENGTH_SHORT).show();
+                    } else {
+                        imageBitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                        String image = saveToInternalStorage(imageBitmap, name);
+                    }
+                }
             } else {
                 if(isEmpty(nameInput))
                     nameInputLayout.setError("Please enter hike name");
@@ -349,17 +384,17 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         //Inflate new observation
         observationBtn.setOnClickListener(v -> {
             //Layout
-            inflate_area = requireView().findViewById(R.id.inflate_area);
-            View observation_view = getLayoutInflater().inflate(R.layout.observation_layout, inflate_area, false);
+            observationArea = requireView().findViewById(R.id.observationArea);
+            View observation_view = getLayoutInflater().inflate(R.layout.observation_layout, observationArea, false);
 
             //Set spinner adapter
-            Spinner observationTypeSpinner = observation_view.findViewById(R.id.observationTypeSpinner);
+            observationTypeSpinner = observation_view.findViewById(R.id.observationTypeSpinner);
             ArrayAdapter<String> observationTypeAdapter = new ArrayAdapter<>(requireContext().getApplicationContext(), R.layout.drop_down_item, getResources().getStringArray(R.array.observation_type));
             observationTypeSpinner.setAdapter(observationTypeAdapter);
 
             //Set text current date time
-            EditText dateInput = observation_view.findViewById(R.id.dateInput);
-            EditText timeInput = observation_view.findViewById(R.id.timeInput);
+            dateInput = observation_view.findViewById(R.id.dateInput);
+            timeInput = observation_view.findViewById(R.id.timeInput);
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
             dateInput.setText(LocalDateTime.now().format(dateFormatter));
@@ -369,24 +404,52 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
             Button pickDateBtn = observation_view.findViewById(R.id.pickDateBtn);
             Button pickTimeBtn = observation_view.findViewById(R.id.pickTimeBtn);
             pickDateBtn.setOnClickListener(dateDialog -> {
-                DatePickerDialog dialog = new DatePickerDialog(requireContext(), R.style.DateTimePickerAppearance,
+                DatePickerDialog dialog = new DatePickerDialog(requireContext(),
                         (datePicker, year, month, dayOfMonth) -> dateInput.setText(LocalDate.of(year, month + 1, dayOfMonth).format(dateFormatter)),
                         LocalDate.now().getYear(), LocalDate.now().getMonthValue(), LocalDate.now().getDayOfMonth());
                 dialog.show();
             });
             pickTimeBtn.setOnClickListener(timeDialog -> {
-                TimePickerDialog dialog = new TimePickerDialog(requireContext(), R.style.DateTimePickerAppearance,
+                TimePickerDialog dialog = new TimePickerDialog(requireContext(),
                         (view1, hourOfDay, minute) -> timeInput.setText(LocalTime.of(hourOfDay, minute).format(timeFormatter)),
                         LocalTime.now().getHour(), LocalTime.now().getMinute(), true);
                 dialog.show();
             });
 
-            //Setup image button click
+            //Comment
+            commentInput = observation_view.findViewById(R.id.commentInput);
 
+            //Setup image button click
+            imageView = observation_view.findViewById(R.id.imageView);
+            imageView.setOnClickListener(v1 -> {openImageChooser(); new_observation = true;});
 
             //Add view to layout
-            inflate_area.addView(observation_view);
+            observationArea.addView(observation_view);
         });
+    }
+
+    private String saveToInternalStorage(Bitmap imageBitmap, String name) {
+        File directory = requireContext().getFilesDir();
+        String fileName;
+        fileName = name + "_" + System.currentTimeMillis() + ".png";
+        File path = new File(directory, fileName);
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(path);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), "Error saving image", Toast.LENGTH_SHORT).show();
+        } finally {
+            try {
+                assert fos != null;
+                fos.close();
+            } catch (IOException e) {
+                Toast.makeText(requireContext(), "Error closing Output Stream", Toast.LENGTH_SHORT).show();
+            }
+        }
+        return fileName;
     }
 
     private boolean isEmpty(EditText input) {
@@ -423,5 +486,31 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
             Toast.makeText(requireContext(), "Successfully deleted hike " + hike1.getHikeName(), Toast.LENGTH_SHORT).show();
             return true;
         } else return item.getItemId() == R.id.noItem;
+    }
+
+    private void openImageChooser() {
+        CropImage.activity()
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .start(requireActivity());
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if(resultCode == RESULT_OK) {
+                Uri imageUri = result.getUri();
+                try {
+                    imageBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(requireContext().getContentResolver(), imageUri));
+                    imageView.setImageBitmap(imageBitmap);
+                    image_set = true;
+                } catch (IOException e) {
+                    Toast.makeText(requireContext(), "Error converting image to Bitmap", Toast.LENGTH_SHORT).show();
+                }
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Toast.makeText(requireContext(), result.getError().toString(), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
