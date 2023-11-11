@@ -8,6 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="lavender">#8692f7</color>
+    <color name="grey">#30D5C8</color>
 
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#fff</color>
 </resources>

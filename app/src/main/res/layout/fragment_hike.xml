@@ -455,14 +455,39 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/observationArea"
+            <TextView
+                android:id="@+id/observationTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="32dp"
+                android:text="@string/observations"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/durationInputLayout" />
+
+            <LinearLayout
+                android:id="@+id/addedObservationArea"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/durationInputLayout">
+                app:layout_constraintTop_toBottomOf="@id/observationTitle">
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/observationInputArea"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/addedObservationArea">
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -478,21 +503,21 @@
                 android:textStyle="bold"
                 android:text="@string/save"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/observationArea" />
+                app:layout_constraintTop_toBottomOf="@id/observationInputArea" />
 
             <Button
-                android:id="@+id/cancelBtn"
+                android:id="@+id/doneBtn"
                 android:layout_width="140dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="12dp"
                 android:backgroundTint="@color/white"
-                android:text="@string/cancel"
+                android:text="@string/done"
                 android:textColor="@color/lavender"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/observationArea" />
+                app:layout_constraintTop_toBottomOf="@id/observationInputArea" />
 
             <Button
                 android:id="@+id/observationBtn"
@@ -506,9 +531,10 @@
                 android:textColor="@color/lavender"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cancelBtn" />
+                app:layout_constraintTop_toBottomOf="@id/doneBtn" />
 
             <ImageButton
                 android:id="@+id/deleteBtn"

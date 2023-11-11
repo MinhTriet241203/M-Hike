@@ -4,10 +4,11 @@ import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
-import java.sql.Time;
 
-@Entity(tableName = "observations", foreignKeys = @ForeignKey(entity = Hike.class, parentColumns = "hike_id", childColumns = "hikeId", onDelete = 5, onUpdate = 5))
+@Entity(tableName = "observations", foreignKeys = @ForeignKey(entity = Hike.class, parentColumns = "hike_id", childColumns = "hikeId", onDelete = 5, onUpdate = 5),
+        indices = @Index(value = {"hikeId"}))
 public class Observation {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "observation_id")
@@ -24,12 +25,13 @@ public class Observation {
     private String observationComment;
 
     @ColumnInfo(name = "observation_image")
+    @Nullable
     private String observationImage;
 
     @ColumnInfo(name = "hikeId")
     private int hikeId;
 
-    public Observation(String observationType, String observationTime, @Nullable String observationComment, String observationImage, int hikeId) {
+    public Observation(String observationType, String observationTime, @Nullable String observationComment, @Nullable String observationImage, int hikeId) {
         this.observationType = observationType;
         this.observationTime = observationTime;
         this.observationComment = observationComment;
@@ -70,11 +72,12 @@ public class Observation {
         this.observationComment = observationComment;
     }
 
+    @Nullable
     public String getObservationImage() {
         return observationImage;
     }
 
-    public void setObservationImage(String observationImage) {
+    public void setObservationImage(@Nullable String observationImage) {
         this.observationImage = observationImage;
     }
 

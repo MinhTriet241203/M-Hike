@@ -53,6 +53,10 @@
     <string name="observation_time">Observation Time</string>
     <string name="date">Date</string>
     <string name="time">Time</string>
+    <string name="ok">OK</string>
+    <string name="save_observation">Save observation</string>
+    <string name="done">Done</string>
+    <string name="observations">Observations</string>
 
     <string-array name="difficulty">
         <item>1 - Easy</item>

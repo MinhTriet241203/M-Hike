@@ -21,6 +21,9 @@ public interface HikeDao {
     @Query("SELECT * FROM hikes WHERE hike_id = :hike_id")
     LiveData<Hike> getHikeById(int hike_id);
 
+    @Query("SELECT * FROM hikes WHERE hike_name = :hike_name")
+    LiveData<Hike> getHikeByName(String hike_name);
+
     @Update
     void updateHike(Hike hike);
 

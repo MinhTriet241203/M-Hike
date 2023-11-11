@@ -115,12 +115,4 @@ public class MainActivity extends AppCompatActivity {
         dialog.getWindow().setGravity(Gravity.BOTTOM);
         dialog.show();
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.);
-        assert fragment != null;
-        fragment.onActivityResult(requestCode, resultCode, data);
-    }
 }
