@@ -21,6 +21,7 @@ public abstract class MHikeDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     MHikeDatabase.class, "M-Hike")
                                     .fallbackToDestructiveMigration()
+                                    .allowMainThreadQueries()
                                     .build();
                 }
             }

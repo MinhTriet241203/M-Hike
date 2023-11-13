@@ -57,6 +57,8 @@
     <string name="save_observation">Save observation</string>
     <string name="done">Done</string>
     <string name="observations">Observations</string>
+    <string name="delete_observation">Delete observation</string>
+    <string name="search_for_hike">Search for hike</string>
 
     <string-array name="difficulty">
         <item>1 - Easy</item>
@@ -68,10 +70,18 @@
 
     <string-array name="observation_type">
         <item>Animals sighting</item>
-        <item>Vegetation encounter</item>
+        <item>Vegetation</item>
         <item>Weather condition</item>
         <item>Trails condition</item>
         <item>Sight</item>
+    </string-array>
+
+    <string-array name="advanced_search">
+        <item>by name</item>
+        <item>by location</item>
+        <item>by length</item>
+        <item>by date</item>
+        <item>observation</item>
     </string-array>
 
 </resources>

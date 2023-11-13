@@ -5,19 +5,22 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
-import androidx.room.Update;
+import java.util.List;
 
 @Dao
 public interface ObservationDao {
 
     @Insert
-    void insertObservation(Observation observation);
+    long insertObservation(Observation observation);
 
     @Query("SELECT * FROM observations WHERE hikeId = :hike_id")
-    LiveData<Observation> getObservationForHike(int hike_id);
+    LiveData<List<Observation>> getObservationsForHike(int hike_id);
 
-    @Update
-    void updateObservation(Observation observation);
+    @Query("SELECT * FROM observations WHERE observation_id = :observation_id")
+    Observation getObservationById(int observation_id);
+
+    @Query("SELECT DISTINCT hikeId FROM observations WHERE observation_type LIKE :observation_type")
+    LiveData<List<Integer>> getHikeIdByObservationType(String observation_type);
 
     @Delete
     void deleteObservation(Observation observation);

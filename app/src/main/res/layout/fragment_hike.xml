@@ -238,7 +238,7 @@
                     android:id="@+id/descriptionInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text|textCapWords|textMultiLine"
+                    android:inputType="text|textCapSentences|textMultiLine"
                     android:textColorHint="@color/white" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -531,7 +531,7 @@
                 android:textColor="@color/lavender"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:visibility="invisible"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/doneBtn" />

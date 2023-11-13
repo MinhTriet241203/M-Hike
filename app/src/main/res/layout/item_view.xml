@@ -1,47 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/itemLayout">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/imageViewLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="10dp"
-        app:cardCornerRadius="5dp">
-
-        <TextView
-            android:id="@+id/idText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"/>
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:contentDescription="@string/observation"
-            android:src="@drawable/test"/>
-
-    </androidx.cardview.widget.CardView>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginStart="10dp"
-        android:layout_toEndOf="@id/imageViewLayout">
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:id="@+id/textArea">
 
         <TextView
             android:id="@+id/nameText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="22sp"
             android:textColor="@color/white"
+            android:textSize="22sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -49,11 +27,12 @@
             android:id="@+id/locationText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:textColor="@color/white"
-            app:drawableLeftCompat="@drawable/ic_baseline_location"
             android:drawablePadding="2dp"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:drawableLeftCompat="@drawable/ic_baseline_location"
             app:drawableTint="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/nameText" />
 
@@ -61,20 +40,34 @@
             android:id="@+id/dateText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:textColor="@color/white"
-            app:drawableLeftCompat="@drawable/ic_baseline_date"
             android:drawablePadding="2dp"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:drawableLeftCompat="@drawable/ic_baseline_date"
             app:drawableTint="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/locationText" />
+
+        <TextView
+            android:id="@+id/lengthText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawablePadding="2dp"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:drawableLeftCompat="@drawable/ic_baseline_length"
+            app:drawableTint="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dateText" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_below="@+id/imageViewLayout"
+        android:layout_below="@id/textArea"
         android:layout_marginTop="22dp"
         android:background="@color/white" />
 

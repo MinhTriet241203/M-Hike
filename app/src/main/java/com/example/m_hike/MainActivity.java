@@ -45,10 +45,6 @@ public class MainActivity extends AppCompatActivity {
                 helper.replaceFragment(new HomeFragment(), null, "home");
             } else if (itemId == R.id.hike) {
                 helper.replaceFragment(new HikeFragment(), null, "hike");
-            } else if (itemId == R.id.account) {
-                helper.replaceFragment(new AccountFragment(), null, "account");
-            } else if (itemId == R.id.settings) {
-                helper.replaceFragment(new SettingsFragment(), null, "settings");
             } else {
                 helper.replaceFragment(new HomeFragment(), null, "home");
             }
@@ -74,14 +70,6 @@ public class MainActivity extends AppCompatActivity {
                         case "hike":
                             helper.replaceFragment(new HikeFragment(), null, "hike");
                             binding.botNavView.setSelectedItemId(R.id.hike);
-                            break;
-                        case "account":
-                            helper.replaceFragment(new AccountFragment(), null, "account");
-                            binding.botNavView.setSelectedItemId(R.id.account);
-                            break;
-                        case "settings":
-                            helper.replaceFragment(new SettingsFragment(), null, "settings");
-                            binding.botNavView.setSelectedItemId(R.id.settings);
                             break;
                         default:
                             helper.replaceFragment(new HomeFragment(), null, "home");

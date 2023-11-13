@@ -7,22 +7,11 @@
         android:icon="@drawable/ic_baseline_home"/>
 
     <item
-        android:id="@+id/hike"
-        android:title="@string/hike"
-        android:icon="@drawable/ic_baseline_hiking"/>
-
-    <item
         android:title=""
         android:enabled="false"/>
 
     <item
-        android:id="@+id/account"
-        android:title="@string/account"
-        android:icon="@drawable/ic_baseline_account"/>
-
-    <item
-        android:id="@+id/settings"
-        android:title="@string/settings"
-        android:icon="@drawable/ic_baseline_settings"/>
-
+        android:id="@+id/hike"
+        android:title="@string/hike"
+        android:icon="@drawable/ic_baseline_hiking"/>
 </menu>

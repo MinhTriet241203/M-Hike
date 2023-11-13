@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class HikeViewHolder extends RecyclerView.ViewHolder {
 
     ImageView imageView;
-    TextView nameText, locationText, dateText, idText;
+    TextView nameText, locationText, dateText, lengthText;
     RelativeLayout itemLayout;
 
     public HikeViewHolder(@NonNull View itemView) {
@@ -22,6 +22,6 @@ public class HikeViewHolder extends RecyclerView.ViewHolder {
         nameText = itemView.findViewById(R.id.nameText);
         locationText = itemView.findViewById(R.id.locationText);
         dateText = itemView.findViewById(R.id.dateText);
-        idText = itemView.findViewById(R.id.idText);
+        lengthText = itemView.findViewById(R.id.lengthText);
     }
 }
