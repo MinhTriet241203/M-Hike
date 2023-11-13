@@ -428,6 +428,8 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                     TextView idText = addedObservationImageItem.findViewById(R.id.observationIdText);
                     Observation observationDelete = db.observationDao().getObservationById(Integer.parseInt(idText.getText().toString()));
                     deleteObservation(observationDelete);
+                    File imageFile = new File(requireContext().getFilesDir(), observation.getObservationImage());
+                    boolean deleted = imageFile.delete();
                     addedObservationArea.removeView(addedObservationImageItem);
                 });
                 addedObservationArea.addView(addedObservationImageItem);
