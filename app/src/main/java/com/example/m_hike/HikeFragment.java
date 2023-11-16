@@ -344,8 +344,10 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                 }
             }
             String equipments = equipmentsBuilder.toString();
-            if (equipments.length() == 0)
+            if (equipments.length() == 0){
                 Toast.makeText(requireContext(), "Please specify equipments for the hike", Toast.LENGTH_SHORT).show();
+                return;
+            }
             equipments = equipments.substring(0, equipments.length() - 1);
             int participants = Integer.parseInt(Objects.requireNonNull(participantsInput.getText()).toString().trim());
             double duration = Double.parseDouble(Objects.requireNonNull(durationInput.getText()).toString().trim());
@@ -359,7 +361,7 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                     saveBtn.setText(R.string.update);
                     saveBtn.setOnClickListener(v -> setUpSaveOrUpdateHike("update"));
                 } catch (Exception exception) {
-                    Toast.makeText(requireContext(), "Error saving " + hike.getHikeName(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), hike.getHikeName() + " already exists", Toast.LENGTH_SHORT).show();
                 }
             } else if(operation.equals("update")) {
                 this.hike.setHikeName(name);
