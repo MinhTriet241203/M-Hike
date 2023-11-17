@@ -62,6 +62,8 @@
     <string name="update_observation">Update observation</string>
     <string name="latitude">Latitude</string>
     <string name="longtitude">Longtitude</string>
+    <string name="observation_location">Observation Location</string>
+    <string name="pick_new_location">Pick new location</string>
 
     <string-array name="difficulty">
         <item>1 - Easy</item>

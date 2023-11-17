@@ -26,12 +26,6 @@
             android:contentDescription="@string/observation"
             android:src="@drawable/test"/>
 
-        <TextView
-            android:id="@+id/observationIdText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"/>
-
     </androidx.cardview.widget.CardView>
     
     <LinearLayout
@@ -46,7 +40,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="6dp"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
@@ -61,6 +55,17 @@
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
             android:textColor="@color/grey"/>
+
+        <TextView
+            android:id="@+id/observationLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_marginTop="6dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:textColor="@color/grey"
+            android:maxLines="2"/>
 
     </LinearLayout>
 

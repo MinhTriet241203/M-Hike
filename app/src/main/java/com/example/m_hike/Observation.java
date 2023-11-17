@@ -7,6 +7,8 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import org.jetbrains.annotations.NotNull;
+
 @Entity(tableName = "observations", foreignKeys = @ForeignKey(entity = Hike.class, parentColumns = "hike_id", childColumns = "hikeId", onDelete = 5, onUpdate = 5),
         indices = @Index(value = {"hikeId"}))
 public class Observation {
@@ -28,14 +30,22 @@ public class Observation {
     @Nullable
     private String observationImage;
 
+    @ColumnInfo(name = "longitude")
+    private double observationLongitude;
+
+    @ColumnInfo(name = "latitude")
+    private double observationLatitude;
+
     @ColumnInfo(name = "hikeId")
     private int hikeId;
 
-    public Observation(String observationType, String observationTime, @Nullable String observationComment, @Nullable String observationImage, int hikeId) {
+    public Observation(String observationType, String observationTime, @Nullable String observationComment, @Nullable String observationImage, double observationLongitude, double observationLatitude, int hikeId) {
         this.observationType = observationType;
         this.observationTime = observationTime;
         this.observationComment = observationComment;
         this.observationImage = observationImage;
+        this.observationLongitude = observationLongitude;
+        this.observationLatitude = observationLatitude;
         this.hikeId = hikeId;
     }
 
@@ -87,5 +97,21 @@ public class Observation {
 
     public void setHikeId(int hikeId) {
         this.hikeId = hikeId;
+    }
+
+    public double getObservationLongitude() {
+        return observationLongitude;
+    }
+
+    public void setObservationLongitude(double observationLongitude) {
+        this.observationLongitude = observationLongitude;
+    }
+
+    public double getObservationLatitude() {
+        return observationLatitude;
+    }
+
+    public void setObservationLatitude(double observationLatitude) {
+        this.observationLatitude = observationLatitude;
     }
 }

@@ -89,19 +89,19 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
     ConstraintLayout observationInputArea;
     LinearLayout addedObservationArea, observationBackground;
     Spinner observationTypeSpinner;
-    EditText dateInput, timeInput, commentInput, longInput, latInput;
-    TextView observationType, observationDateTime, observationTitle;
+    EditText dateInput, timeInput, commentInput, observationLocationInput;
+    TextView observationType, observationDateTime, observationTitle, observationLocation;
     ImageView imageView, observationImage;
     ImageButton deleteObservationBtn;
     ActivityResultLauncher<Intent> resultLauncher;
     Bitmap imageBitmap;
     View observationInputView;
-    Button pickDateBtn;
-    Button pickTimeBtn;
+    Button pickDateBtn, pickTimeBtn, pickNewLocationBtn;
     private boolean new_observation = false, image_set = false;
     DateTimeFormatter dateFormatter, timeFormatter;
     ArrayAdapter<String> observationTypeAdapter;
     LocationManager locationManager;
+    double latitude, longitude;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -180,8 +180,8 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         pickTimeBtn = observationInputView.findViewById(R.id.pickTimeBtn);
         commentInput = observationInputView.findViewById(R.id.commentInput);
         imageView = observationInputView.findViewById(R.id.imageView);
-        longInput = observationInputView.findViewById(R.id.longInput);
-        latInput = observationInputView.findViewById(R.id.latInput);
+        observationLocationInput = observationInputView.findViewById(R.id.locationInput);
+        pickNewLocationBtn = observationInputView.findViewById(R.id.pickNewLocationBtn);
         dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
         timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         observationTypeAdapter = new ArrayAdapter<>(requireContext().getApplicationContext(), R.layout.drop_down_item, getResources().getStringArray(R.array.observation_type));
@@ -278,10 +278,12 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                         observationDateTime = addedObservationImageItem.findViewById(R.id.observationDateTime);
                         deleteObservationBtn = addedObservationImageItem.findViewById(R.id.deleteObservationBtn);
                         observationImage = addedObservationImageItem.findViewById(R.id.observationImage);
+                        observationLocation = addedObservationImageItem.findViewById(R.id.observationLocation);
                         observationBackground = addedObservationImageItem.findViewById(R.id.observationBackground);
 
                         observationType.setText(observation.getObservationType());
                         observationDateTime.setText(String.format("at %s", observation.getObservationTime()));
+                        observationLocation.setText(String.format("on %s", getLocationFromLatLong(observation.getObservationLatitude(), observation.getObservationLongitude())));
                         observationImage.setImageBitmap(loadFromInternalStorage(observation.getObservationImage()));
                         deleteObservationBtn.setOnClickListener(v1 -> {
                             deleteObservation(observation);
@@ -299,10 +301,12 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                         observationType = addedObservationItem.findViewById(R.id.observationType);
                         observationDateTime = addedObservationItem.findViewById(R.id.observationDateTime);
                         deleteObservationBtn = addedObservationItem.findViewById(R.id.deleteObservationBtn);
+                        observationLocation = addedObservationItem.findViewById(R.id.observationLocation);
                         observationBackground = addedObservationItem.findViewById(R.id.observationBackground);
 
                         observationType.setText(observation.getObservationType());
                         observationDateTime.setText(String.format("at %s", observation.getObservationTime().trim()));
+                        observationLocation.setText(String.format("on %s", getLocationFromLatLong(observation.getObservationLatitude(), observation.getObservationLongitude())));
                         deleteObservationBtn.setOnClickListener(v1 -> {
                             deleteObservation(observation);
                             addedObservationArea.removeView(addedObservationItem);
@@ -413,7 +417,7 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                 comment = commentInput.getText().toString();
             if (image_set)
                 image = saveToInternalStorage(imageBitmap, observationTypeSpinner.getSelectedItem().toString());
-            Observation observation = new Observation(observationTypeSpinner.getSelectedItem().toString(), dateInput.getText().toString() + ", " + timeInput.getText().toString(), comment, image, hikeId);
+            Observation observation = new Observation(observationTypeSpinner.getSelectedItem().toString(), dateInput.getText().toString() + ", " + timeInput.getText().toString(), comment, image, longitude, latitude, hikeId);
             try {
                 observation.setObservationId((int) db.observationDao().insertObservation(observation));
             } catch (Exception e) {
@@ -427,10 +431,12 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                 observationDateTime = addedObservationImageItem.findViewById(R.id.observationDateTime);
                 deleteObservationBtn = addedObservationImageItem.findViewById(R.id.deleteObservationBtn);
                 observationImage = addedObservationImageItem.findViewById(R.id.observationImage);
+                observationLocation = addedObservationImageItem.findViewById(R.id.observationLocation);
                 observationBackground = addedObservationImageItem.findViewById(R.id.observationBackground);
 
                 observationType.setText(observation.getObservationType().trim());
                 observationDateTime.setText(String.format("at %s", observation.getObservationTime().trim()));
+                observationLocation.setText(String.format("on %s", getLocationFromLatLong(observation.getObservationLatitude(), observation.getObservationLongitude())));
                 observationImage.setImageBitmap(imageBitmap);
                 deleteObservationBtn.setOnClickListener(v1 -> {
                     deleteObservation(observation);
@@ -448,10 +454,12 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                 observationType = addedObservationItem.findViewById(R.id.observationType);
                 observationDateTime = addedObservationItem.findViewById(R.id.observationDateTime);
                 deleteObservationBtn = addedObservationItem.findViewById(R.id.deleteObservationBtn);
+                observationLocation = addedObservationItem.findViewById(R.id.observationLocation);
                 observationBackground = addedObservationItem.findViewById(R.id.observationBackground);
 
                 observationType.setText(observation.getObservationType());
                 observationDateTime.setText(String.format("at %s", observation.getObservationTime().trim()));
+                observationLocation.setText(String.format("on %s", getLocationFromLatLong(observation.getObservationLatitude(), observation.getObservationLongitude())));
                 deleteObservationBtn.setOnClickListener(v1 -> {
                     deleteObservation(observation);
                     addedObservationArea.removeView(addedObservationItem);
@@ -488,6 +496,7 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                 dialog.show();
             });
             getLocation();
+            pickNewLocationBtn.setOnClickListener(v -> getLocation());
             imageView.setImageResource(R.drawable.ic_baseline_add_photo);
             imageView.setOnClickListener(v12 -> pickImage());
             //Add view to layout
@@ -639,6 +648,8 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
             TimePickerDialog dialog = new TimePickerDialog(requireContext(), (view1, hourOfDay, minute) -> timeInput.setText(LocalTime.of(hourOfDay, minute).format(timeFormatter)), Integer.parseInt(times[0]), Integer.parseInt(times[1]), true);
             dialog.show();
         });
+        getLocation();
+        pickNewLocationBtn.setOnClickListener(v -> getLocation());
         commentInput.setText(observation.getObservationComment());
         final boolean[] update_image = new boolean[1];
         if (observation.getObservationImage() != null && !observation.getObservationImage().equals("")) {
@@ -700,15 +711,26 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        longInput.setText(String.valueOf(location.getLongitude()));
-        latInput.setText(String.valueOf(location.getLatitude()));
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
         try{
             Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
             List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
             String address = addresses.get(0).getAddressLine(0);
-            Toast.makeText(requireContext(), "Address " + address, Toast.LENGTH_SHORT).show();
+            observationLocationInput.setText(address);
         } catch (Exception e) {
-            e.printStackTrace();
+            Toast.makeText(requireContext(), "Cannot get address, please try again.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private String getLocationFromLatLong(double latitude, double longitude) {
+        try{
+            Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            return addresses.get(0).getAddressLine(0);
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), "Cannot get address, please try again.", Toast.LENGTH_SHORT).show();
+        }
+        return null;
     }
 }

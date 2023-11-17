@@ -137,58 +137,48 @@
         app:layout_constraintTop_toBottomOf="@+id/timeInputLayout" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/longInputLayout"
+        android:id="@+id/locationInputLayout"
         style="@style/TextField"
-        android:layout_width="170dp"
+        app:startIconDrawable="@drawable/ic_baseline_location"
+        app:startIconTint="@color/white"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="4dp"
-        android:hint="@string/longtitude"
-        app:boxStrokeWidth="2dp"
-        app:hintAnimationEnabled="true"
-        app:hintEnabled="true"
-        app:layout_constraintEnd_toStartOf="@+id/timeInputLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pickDateBtn">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/longInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:inputType="none"
-            android:text=""
-            android:textColorHint="@color/white" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/latInputLayout"
-        style="@style/TextField"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="12dp"
         android:layout_marginEnd="32dp"
-        android:hint="@string/latitude"
+        android:hint="@string/observation_location"
         app:boxStrokeWidth="2dp"
         app:hintAnimationEnabled="true"
         app:hintEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/longInputLayout"
-        app:layout_constraintTop_toBottomOf="@+id/pickTimeBtn">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pickDateBtn">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/latInput"
+            android:id="@+id/locationInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:enabled="false"
-            android:inputType="none"
-            android:text=""
-            android:textColorHint="@color/white" />
+            android:inputType="text|textCapSentences"
+            android:textColorHint="@color/white"
+            android:enabled="false"/>
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/pickNewLocationBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="32dp"
+        android:backgroundTint="@color/white"
+        android:text="@string/pick_new_location"
+        android:textColor="@color/lavender"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/locationInputLayout" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/commentInputLayout"
@@ -211,7 +201,7 @@
         app:hintEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/longInputLayout">
+        app:layout_constraintTop_toBottomOf="@+id/pickNewLocationBtn">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/commentInput"
