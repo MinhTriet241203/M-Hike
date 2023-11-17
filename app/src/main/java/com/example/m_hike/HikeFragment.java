@@ -1,13 +1,23 @@
 package com.example.m_hike;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageDecoder;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -25,18 +35,22 @@ import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -54,16 +68,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-public class HikeFragment extends Fragment implements androidx.appcompat.widget.PopupMenu.OnMenuItemClickListener {
+public class HikeFragment extends Fragment implements androidx.appcompat.widget.PopupMenu.OnMenuItemClickListener, LocationListener {
     //Hike Info
     int hikeId = 0;
     int observationId = 0;
     Hike hike;
     TextView hikeTitle;
-    TextInputLayout nameInputLayout, locationInputLayout, lengthInputLayout, descriptionInputLayout,
-            otherEquipmentInputLayout, participantsInputLayout, durationInputLayout;
-    TextInputEditText nameInput, locationInput, lengthInput, descriptionInput,
-            otherEquipmentInput, participantsInput, durationInput;
+    TextInputLayout nameInputLayout, locationInputLayout, lengthInputLayout, descriptionInputLayout, otherEquipmentInputLayout, participantsInputLayout, durationInputLayout;
+    TextInputEditText nameInput, locationInput, lengthInput, descriptionInput, otherEquipmentInput, participantsInput, durationInput;
     DatePicker datePicker;
     SwitchCompat parkingSwitch;
     Spinner difficultySpinner;
@@ -75,37 +87,35 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
     Helper helper;
     //Observation View
     ConstraintLayout observationInputArea;
-    LinearLayout addedObservationArea;
+    LinearLayout addedObservationArea, observationBackground;
     Spinner observationTypeSpinner;
-    EditText dateInput, timeInput, commentInput;
-    TextView observationType, observationDateTime, observationTitle, observationIdText;
+    EditText dateInput, timeInput, commentInput, longInput, latInput;
+    TextView observationType, observationDateTime, observationTitle;
     ImageView imageView, observationImage;
     ImageButton deleteObservationBtn;
-    private boolean new_observation = false, image_set = false;
     ActivityResultLauncher<Intent> resultLauncher;
     Bitmap imageBitmap;
     View observationInputView;
     Button pickDateBtn;
     Button pickTimeBtn;
+    private boolean new_observation = false, image_set = false;
+    DateTimeFormatter dateFormatter, timeFormatter;
+    ArrayAdapter<String> observationTypeAdapter;
+    LocationManager locationManager;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        if(this.getArguments() != null)
-            hikeId = this.getArguments().getInt("hike_id");
-        resultLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    try{
-                        Uri imageURI = Objects.requireNonNull(result.getData()).getData();
-                        imageBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(requireContext().getContentResolver(), Objects.requireNonNull(imageURI)));
-                        imageView.setImageBitmap(imageBitmap);
-                        image_set = true;
-                    } catch (Exception exception) {
-                        Toast.makeText(requireContext(), "Error converting image to Bitmap", Toast.LENGTH_SHORT).show();
-                    }
-                }
-        );
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (this.getArguments() != null) hikeId = this.getArguments().getInt("hike_id");
+        resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            try {
+                Uri imageURI = Objects.requireNonNull(result.getData()).getData();
+                imageBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(requireContext().getContentResolver(), Objects.requireNonNull(imageURI)));
+                imageView.setImageBitmap(imageBitmap);
+                image_set = true;
+            } catch (Exception exception) {
+                Toast.makeText(requireContext(), "Error converting image to Bitmap", Toast.LENGTH_SHORT).show();
+            }
+        });
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_hike, container, false);
     }
@@ -113,7 +123,6 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         //Titles
         hikeTitle = requireView().findViewById(R.id.hikeTitle);
         observationTitle = requireView().findViewById(R.id.observationTitle);
@@ -171,10 +180,15 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         pickTimeBtn = observationInputView.findViewById(R.id.pickTimeBtn);
         commentInput = observationInputView.findViewById(R.id.commentInput);
         imageView = observationInputView.findViewById(R.id.imageView);
+        longInput = observationInputView.findViewById(R.id.longInput);
+        latInput = observationInputView.findViewById(R.id.latInput);
+        dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        observationTypeAdapter = new ArrayAdapter<>(requireContext().getApplicationContext(), R.layout.drop_down_item, getResources().getStringArray(R.array.observation_type));
 
         //Show other EditText
         otherCB.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(isChecked) {
+            if (isChecked) {
                 otherEquipmentInputLayout.setVisibility(View.VISIBLE);
             } else {
                 otherEquipmentInputLayout.setVisibility(View.GONE);
@@ -194,7 +208,7 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         saveBtn.setOnClickListener(v -> setUpSaveOrUpdateHike("save"));
 
         //Populate form for update operation
-        if(hikeId != 0) {
+        if (hikeId != 0) {
             deleteBtn.setVisibility(View.VISIBLE);
             saveBtn.setText(R.string.update);
             saveBtn.setOnClickListener(v -> setUpSaveOrUpdateHike("update"));
@@ -208,90 +222,95 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                 locationInput.setText(this.hike.getLocation());
                 String[] dateStr = this.hike.getDate().split("/", 3);
                 datePicker.init(Integer.parseInt(dateStr[2]), Integer.parseInt(dateStr[1]) - 1, Integer.parseInt(dateStr[0]), null);
-                if(this.hike.getParking()) {
+                if (this.hike.getParking()) {
                     parkingSwitch.setChecked(true);
                 }
-                lengthInput.setText(String.format(Locale.getDefault(),"%.2f", this.hike.getLength()));
+                lengthInput.setText(String.format(Locale.getDefault(), "%.2f", this.hike.getLength()));
                 difficultySpinner.setSelection(this.hike.getDifficulty() - 1);
-                if(this.hike.getDescription() != null)
+                if (this.hike.getDescription() != null)
                     descriptionInput.setText(this.hike.getDescription());
                 String[] eq = Objects.requireNonNull(this.hike.getEquipments()).split(",", 0);
                 List<String> equipment = Arrays.stream(eq).collect(Collectors.toList());
-                if(equipment.contains("satellite")){
+                if (equipment.contains("satellite")) {
                     satelliteCB.setChecked(true);
                     equipment.remove(0);
                 }
-                if(equipment.contains("poles")) {
+                if (equipment.contains("poles")) {
                     polesCB.setChecked(true);
                     equipment.remove(0);
                 }
-                if(equipment.contains("headlamp")){
+                if (equipment.contains("headlamp")) {
                     headlampCB.setChecked(true);
                     equipment.remove(0);
                 }
-                if(equipment.contains("water")){
+                if (equipment.contains("water")) {
                     waterCB.setChecked(true);
                     equipment.remove(0);
                 }
-                if(equipment.contains("gps")){
+                if (equipment.contains("gps")) {
                     gpsCB.setChecked(true);
                     equipment.remove(0);
                 }
-                if(equipment.contains("battery")){
+                if (equipment.contains("battery")) {
                     batteryCB.setChecked(true);
                     equipment.remove(0);
                 }
-                if(equipment.size() > 0){
+                if (equipment.size() > 0) {
                     otherCB.setChecked(true);
                     StringBuilder eSB = new StringBuilder();
-                    for (String extraEquipment: equipment) {
+                    for (String extraEquipment : equipment) {
                         eSB.append(extraEquipment.trim()).append(", ");
                     }
                     String extraEquipments = eSB.substring(0, eSB.length() - 2);
                     otherEquipmentInput.setText(extraEquipments);
                 }
-                participantsInput.setText(String.format(Locale.getDefault(),"%d", this.hike.getParticipants()));
-                durationInput.setText(String.format(Locale.getDefault(),"%.2f", this.hike.getDuration()));
+                participantsInput.setText(String.format(Locale.getDefault(), "%d", this.hike.getParticipants()));
+                durationInput.setText(String.format(Locale.getDefault(), "%.2f", this.hike.getDuration()));
             });
             //Show observations
             LiveData<List<Observation>> observationsList = db.observationDao().getObservationsForHike(hikeId);
             observationsList.observe(getViewLifecycleOwner(), observations -> {
                 addedObservationArea.removeAllViews();
-                for (Observation observation:observations) {
-                    if(observation.getObservationImage() != null) {
+                for (Observation observation : observations) {
+                    if (observation.getObservationImage() != null) {
                         View addedObservationImageItem = getLayoutInflater().inflate(R.layout.observation_added_image_layout, addedObservationArea, false);
                         observationType = addedObservationImageItem.findViewById(R.id.observationType);
                         observationDateTime = addedObservationImageItem.findViewById(R.id.observationDateTime);
                         deleteObservationBtn = addedObservationImageItem.findViewById(R.id.deleteObservationBtn);
                         observationImage = addedObservationImageItem.findViewById(R.id.observationImage);
-                        observationIdText = addedObservationImageItem.findViewById(R.id.observationIdText);
+                        observationBackground = addedObservationImageItem.findViewById(R.id.observationBackground);
+
                         observationType.setText(observation.getObservationType());
                         observationDateTime.setText(String.format("at %s", observation.getObservationTime()));
-                        observationIdText.setText(String.valueOf(observation.getObservationId()));
                         observationImage.setImageBitmap(loadFromInternalStorage(observation.getObservationImage()));
                         deleteObservationBtn.setOnClickListener(v1 -> {
-                            TextView idText = addedObservationImageItem.findViewById(R.id.observationIdText);
-                            Observation observationDelete = db.observationDao().getObservationById(Integer.parseInt(idText.getText().toString()));
-                            deleteObservation(observationDelete);
+                            deleteObservation(observation);
+                            File imageFile = new File(requireContext().getFilesDir(), observation.getObservationImage());
+                            imageFile.delete();
                             addedObservationArea.removeView(addedObservationImageItem);
+                            observationInputArea.removeAllViews();
+                            observationBtn.setText(R.string.add_observation);
+                            observationBtn.setOnClickListener(v -> setUpObservationInput());
                         });
+                        observationBackground.setOnClickListener(v -> updateObservation(observation));
                         addedObservationArea.addView(addedObservationImageItem);
                     } else {
                         View addedObservationItem = getLayoutInflater().inflate(R.layout.observation_added_layout, addedObservationArea, false);
                         observationType = addedObservationItem.findViewById(R.id.observationType);
                         observationDateTime = addedObservationItem.findViewById(R.id.observationDateTime);
                         deleteObservationBtn = addedObservationItem.findViewById(R.id.deleteObservationBtn);
-                        observationIdText = addedObservationItem.findViewById(R.id.observationIdText);
+                        observationBackground = addedObservationItem.findViewById(R.id.observationBackground);
 
                         observationType.setText(observation.getObservationType());
-                        observationDateTime.setText(String.format("at %s", observation.getObservationTime()));
-                        observationIdText.setText(String.valueOf(observation.getObservationId()));
+                        observationDateTime.setText(String.format("at %s", observation.getObservationTime().trim()));
                         deleteObservationBtn.setOnClickListener(v1 -> {
-                            TextView idText = addedObservationItem.findViewById(R.id.observationIdText);
-                            Observation observationDelete = db.observationDao().getObservationById(Integer.parseInt(idText.getText().toString()));
-                            deleteObservation(observationDelete);
+                            deleteObservation(observation);
                             addedObservationArea.removeView(addedObservationItem);
+                            observationInputArea.removeAllViews();
+                            observationBtn.setText(R.string.add_observation);
+                            observationBtn.setOnClickListener(v -> setUpObservationInput());
                         });
+                        observationBackground.setOnClickListener(v -> updateObservation(observation));
                         addedObservationArea.addView(addedObservationItem);
                     }
                 }
@@ -303,7 +322,7 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
     }
 
     private void setUpSaveOrUpdateHike(String operation) {
-        if(!isEmpty(nameInput) && !isEmpty(locationInput) && !isEmpty(lengthInput) && !isEmpty(participantsInput) && !isEmpty(durationInput)) {
+        if (!isEmpty(nameInput) && !isEmpty(locationInput) && !isEmpty(lengthInput) && !isEmpty(participantsInput) && !isEmpty(durationInput)) {
             String name = Objects.requireNonNull(nameInput.getText()).toString().trim();
             String location = Objects.requireNonNull(locationInput.getText()).toString().trim();
             int day = datePicker.getDayOfMonth();
@@ -315,28 +334,22 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
             String difficultyString = difficultySpinner.getSelectedItem().toString().trim();
             int difficulty = Integer.parseInt(difficultyString.substring(0, 1));
             String description = "";
-            if(!isEmpty(descriptionInput))
+            if (!isEmpty(descriptionInput))
                 description = Objects.requireNonNull(descriptionInput.getText()).toString().trim();
             StringBuilder equipmentsBuilder = new StringBuilder();
-            if(satelliteCB.isChecked())
-                equipmentsBuilder.append("satellite,");
-            if(polesCB.isChecked())
-                equipmentsBuilder.append("poles,");
-            if(headlampCB.isChecked())
-                equipmentsBuilder.append("headlamp,");
-            if(waterCB.isChecked())
-                equipmentsBuilder.append("water,");
-            if(gpsCB.isChecked())
-                equipmentsBuilder.append("gps,");
-            if(batteryCB.isChecked())
-                equipmentsBuilder.append("battery,");
-            if(otherCB.isChecked()) {
-                if(isEmpty(otherEquipmentInput)) {
+            if (satelliteCB.isChecked()) equipmentsBuilder.append("satellite,");
+            if (polesCB.isChecked()) equipmentsBuilder.append("poles,");
+            if (headlampCB.isChecked()) equipmentsBuilder.append("headlamp,");
+            if (waterCB.isChecked()) equipmentsBuilder.append("water,");
+            if (gpsCB.isChecked()) equipmentsBuilder.append("gps,");
+            if (batteryCB.isChecked()) equipmentsBuilder.append("battery,");
+            if (otherCB.isChecked()) {
+                if (isEmpty(otherEquipmentInput)) {
                     otherEquipmentInputLayout.setError("Please specify other equipments.");
                 } else {
                     String[] otherEquipments = Objects.requireNonNull(otherEquipmentInput.getText()).toString().split(",");
-                    for (String e:otherEquipments) {
-                        if(!Objects.equals(e, "") && e != null){
+                    for (String e : otherEquipments) {
+                        if (!Objects.equals(e, "") && e != null) {
                             e = e.trim();
                             equipmentsBuilder.append(e).append(",");
                         }
@@ -344,15 +357,15 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                 }
             }
             String equipments = equipmentsBuilder.toString();
-            if (equipments.length() == 0){
+            if (equipments.length() == 0) {
                 Toast.makeText(requireContext(), "Please specify equipments for the hike", Toast.LENGTH_SHORT).show();
                 return;
             }
             equipments = equipments.substring(0, equipments.length() - 1);
             int participants = Integer.parseInt(Objects.requireNonNull(participantsInput.getText()).toString().trim());
             double duration = Double.parseDouble(Objects.requireNonNull(durationInput.getText()).toString().trim());
-            if(operation.equals("save")) {
-                try{
+            if (operation.equals("save")) {
+                try {
                     hike = new Hike(name, location, date, parking, length, difficulty, description, equipments, participants, duration);
                     hikeId = (int) db.hikeDao().insertHike(hike);
                     hike.setHikeId(hikeId);
@@ -363,7 +376,7 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                 } catch (Exception exception) {
                     Toast.makeText(requireContext(), hike.getHikeName() + " already exists", Toast.LENGTH_SHORT).show();
                 }
-            } else if(operation.equals("update")) {
+            } else if (operation.equals("update")) {
                 this.hike.setHikeName(name);
                 this.hike.setLocation(location);
                 this.hike.setDate(date);
@@ -375,7 +388,7 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                 this.hike.setParticipants(participants);
                 this.hike.setDuration(duration);
 
-                try{
+                try {
                     updateHike(this.hike);
                     Toast.makeText(requireContext(), "Successfully updated hike " + this.hike.getHikeName(), Toast.LENGTH_SHORT).show();
                 } catch (Exception exception) {
@@ -383,74 +396,70 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                 }
             }
         } else {
-            if(isEmpty(nameInput))
-                nameInputLayout.setError("Please enter hike name");
-            if(isEmpty(locationInput))
-                locationInputLayout.setError("Please enter hike location");
-            if(isEmpty(lengthInput))
-                lengthInputLayout.setError("Please enter hike length");
-            if(isEmpty(participantsInput))
+            if (isEmpty(nameInput)) nameInputLayout.setError("Please enter hike name");
+            if (isEmpty(locationInput)) locationInputLayout.setError("Please enter hike location");
+            if (isEmpty(lengthInput)) lengthInputLayout.setError("Please enter hike length");
+            if (isEmpty(participantsInput))
                 participantsInputLayout.setError("Please enter number of participants");
-            if(isEmpty(durationInput))
-                durationInputLayout.setError("Please enter hike duration");
+            if (isEmpty(durationInput)) durationInputLayout.setError("Please enter hike duration");
         }
     }
 
     private void setUpObservationInput() {
-        if(new_observation && hikeId != 0) {
+        if (new_observation && hikeId != 0) {
             //Save observation
-            String type = observationTypeSpinner.getSelectedItem().toString().trim();
-            String dateTime = dateInput.getText().toString().trim() + ", " + timeInput.getText().toString().trim();
             String comment = null, image = null;
-            if(!isEmpty(commentInput))
+            if (!isEmpty(commentInput))
                 comment = commentInput.getText().toString();
-            if(image_set) {
-                image = saveToInternalStorage(imageBitmap, type);
-            }
-            Observation observation = new Observation(type, dateTime, comment, image, hikeId);
-            try{
-                observationId = (int) db.observationDao().insertObservation(observation);
+            if (image_set)
+                image = saveToInternalStorage(imageBitmap, observationTypeSpinner.getSelectedItem().toString());
+            Observation observation = new Observation(observationTypeSpinner.getSelectedItem().toString(), dateInput.getText().toString() + ", " + timeInput.getText().toString(), comment, image, hikeId);
+            try {
+                observation.setObservationId((int) db.observationDao().insertObservation(observation));
             } catch (Exception e) {
                 Toast.makeText(requireContext(), "Error saving observation", Toast.LENGTH_SHORT).show();
+                return;
             }
             Toast.makeText(requireContext(), "Successfully saved observation with id " + observationId, Toast.LENGTH_SHORT).show();
-            if(image_set) {
+            if (image_set) {
                 View addedObservationImageItem = getLayoutInflater().inflate(R.layout.observation_added_image_layout, addedObservationArea, false);
                 observationType = addedObservationImageItem.findViewById(R.id.observationType);
                 observationDateTime = addedObservationImageItem.findViewById(R.id.observationDateTime);
                 deleteObservationBtn = addedObservationImageItem.findViewById(R.id.deleteObservationBtn);
                 observationImage = addedObservationImageItem.findViewById(R.id.observationImage);
-                observationIdText = addedObservationImageItem.findViewById(R.id.observationIdText);
+                observationBackground = addedObservationImageItem.findViewById(R.id.observationBackground);
 
-                observationType.setText(type);
-                observationDateTime.setText(String.format("at %s", dateTime));
-                observationIdText.setText(String.valueOf(observationId));
+                observationType.setText(observation.getObservationType().trim());
+                observationDateTime.setText(String.format("at %s", observation.getObservationTime().trim()));
                 observationImage.setImageBitmap(imageBitmap);
                 deleteObservationBtn.setOnClickListener(v1 -> {
-                    TextView idText = addedObservationImageItem.findViewById(R.id.observationIdText);
-                    Observation observationDelete = db.observationDao().getObservationById(Integer.parseInt(idText.getText().toString()));
-                    deleteObservation(observationDelete);
+                    deleteObservation(observation);
                     File imageFile = new File(requireContext().getFilesDir(), observation.getObservationImage());
-                    boolean deleted = imageFile.delete();
+                    imageFile.delete();
                     addedObservationArea.removeView(addedObservationImageItem);
+                    observationInputArea.removeAllViews();
+                    observationBtn.setText(R.string.add_observation);
+                    observationBtn.setOnClickListener(v -> setUpObservationInput());
                 });
+                observationBackground.setOnClickListener(v -> updateObservation(observation));
                 addedObservationArea.addView(addedObservationImageItem);
             } else {
                 View addedObservationItem = getLayoutInflater().inflate(R.layout.observation_added_layout, addedObservationArea, false);
                 observationType = addedObservationItem.findViewById(R.id.observationType);
                 observationDateTime = addedObservationItem.findViewById(R.id.observationDateTime);
                 deleteObservationBtn = addedObservationItem.findViewById(R.id.deleteObservationBtn);
-                observationIdText = addedObservationItem.findViewById(R.id.observationIdText);
+                observationBackground = addedObservationItem.findViewById(R.id.observationBackground);
 
-                observationType.setText(type);
-                observationDateTime.setText(String.format("at %s", dateTime));
-                observationIdText.setText(String.valueOf(observationId));
+                observationType.setText(observation.getObservationType());
+                observationDateTime.setText(String.format("at %s", observation.getObservationTime().trim()));
                 deleteObservationBtn.setOnClickListener(v1 -> {
-                    TextView idText = addedObservationItem.findViewById(R.id.observationIdText);
-                    Observation observationDelete = db.observationDao().getObservationById(Integer.parseInt(idText.getText().toString()));
-                    deleteObservation(observationDelete);
+                    deleteObservation(observation);
                     addedObservationArea.removeView(addedObservationItem);
+                    observationInputArea.removeAllViews();
+                    observationBtn.setText(R.string.add_observation);
+                    observationBtn.setOnClickListener(v -> setUpObservationInput());
                 });
+                observationBackground.setOnClickListener(v -> updateObservation(observation));
                 addedObservationArea.addView(addedObservationItem);
             }
 
@@ -463,33 +472,24 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         } else {
             //Set up to input new observation
             //Set spinner adapter
-            ArrayAdapter<String> observationTypeAdapter = new ArrayAdapter<>(requireContext().getApplicationContext(),
-                    R.layout.drop_down_item, getResources().getStringArray(R.array.observation_type));
             observationTypeSpinner.setAdapter(observationTypeAdapter);
 
             //Set text current date time
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
             dateInput.setText(LocalDateTime.now().format(dateFormatter));
             timeInput.setText(LocalDateTime.now().format(timeFormatter));
-
+            commentInput.setText("");
             //Setup date and time button click
             pickDateBtn.setOnClickListener(dateDialog -> {
-                DatePickerDialog dialog = new DatePickerDialog(requireContext(),
-                        (datePicker, year, month, dayOfMonth) -> dateInput.setText(LocalDate.of(year, month + 1, dayOfMonth).format(dateFormatter)),
-                        LocalDate.now().getYear(), LocalDate.now().getMonthValue(), LocalDate.now().getDayOfMonth());
+                DatePickerDialog dialog = new DatePickerDialog(requireContext(), (datePicker, year, month, dayOfMonth) -> dateInput.setText(LocalDate.of(year, month + 1, dayOfMonth).format(dateFormatter)), LocalDate.now().getYear(), LocalDate.now().getMonthValue(), LocalDate.now().getDayOfMonth());
                 dialog.show();
             });
             pickTimeBtn.setOnClickListener(timeDialog -> {
-                TimePickerDialog dialog = new TimePickerDialog(requireContext(),
-                        (view1, hourOfDay, minute) -> timeInput.setText(LocalTime.of(hourOfDay, minute).format(timeFormatter)),
-                        LocalTime.now().getHour(), LocalTime.now().getMinute(), true);
+                TimePickerDialog dialog = new TimePickerDialog(requireContext(), (view1, hourOfDay, minute) -> timeInput.setText(LocalTime.of(hourOfDay, minute).format(timeFormatter)), LocalTime.now().getHour(), LocalTime.now().getMinute(), true);
                 dialog.show();
             });
+            getLocation();
             imageView.setImageResource(R.drawable.ic_baseline_add_photo);
-
             imageView.setOnClickListener(v12 -> pickImage());
-
             //Add view to layout
             observationInputArea.addView(observationInputView);
             observationBtn.setText(R.string.save_observation);
@@ -506,7 +506,7 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         resultLauncher.launch(intent);
     }
 
-    private String saveToInternalStorage(Bitmap bitmapImage, String observationName){
+    private String saveToInternalStorage(Bitmap bitmapImage, String observationName) {
         File directory = requireContext().getFilesDir();
         String fileName = observationName + "_" + System.currentTimeMillis() + ".png";
         File path = new File(directory, fileName);
@@ -536,8 +536,9 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         popup.show();
     }
 
-    @Override public boolean onMenuItemClick(MenuItem item) {
-        if(item.getItemId() == R.id.yesItem) {
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if (item.getItemId() == R.id.yesItem) {
             deleteHike(hike);
             helper.replaceFragment(new HomeFragment(), null, "home");
             Toast.makeText(requireContext(), "Successfully deleted hike " + hike.getHikeName(), Toast.LENGTH_SHORT).show();
@@ -557,9 +558,7 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
     }
 
     private void deleteObservation(Observation observation) {
-        Runnable deleteObservation = () -> {
-            db.observationDao().deleteObservation(observation);
-        };
+        Runnable deleteObservation = () -> db.observationDao().deleteObservation(observation);
         executors.execute(deleteObservation);
     }
 
@@ -568,11 +567,148 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         try {
             File imageFile = new File(path, fileName);
             return BitmapFactory.decodeStream(new FileInputStream(imageFile));
-        }
-        catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             Toast.makeText(requireContext(), "Cannot find image", Toast.LENGTH_SHORT).show();
         }
         return null;
+    }
+
+    private int getObservationTypeIndex(String observationType) {
+        switch (observationType) {
+            case "Animals sighting":
+                return 0;
+            case "Vegetation":
+                return 1;
+            case "Weather condition":
+                return 2;
+            case "Trails condition":
+                return 3;
+            case "Sight":
+                return 4;
+        }
+        return 0;
+    }
+
+    private int getMonthValue(String monthName) {
+        switch (monthName) {
+            case "Jan":
+                return 1;
+            case "Feb":
+                return 2;
+            case "Mar":
+                return 3;
+            case "Apr":
+                return 4;
+            case "May":
+                return 5;
+            case "Jun":
+                return 6;
+            case "Jul":
+                return 7;
+            case "Aug":
+                return 8;
+            case "Sep":
+                return 9;
+            case "Oct":
+                return 10;
+            case "Nov":
+                return 11;
+            case "Dec":
+                return 12;
+        }
+        return LocalDate.now().getMonthValue();
+    }
+
+    private void updateObservation(Observation observation) {
+        //Set up form to update observation
+        //Set spinner adapter and selected item
+        observationTypeSpinner.setAdapter(observationTypeAdapter);
+        observationTypeSpinner.setSelection(getObservationTypeIndex(observation.getObservationType()));
+        //Set text current date time
+        String[] observationDateTime = observation.getObservationTime().split((", "));
+        dateInput.setText(observationDateTime[0]);
+        timeInput.setText(observationDateTime[1]);
+        //Setup date and time button click
+        String[] dates = observationDateTime[0].split(" ");
+        String[] times = observationDateTime[1].split(":");
+        pickDateBtn.setOnClickListener(dateDialog -> {
+            DatePickerDialog dialog = new DatePickerDialog(requireContext(), (datePicker, year, month, dayOfMonth) -> dateInput.setText(LocalDate.of(year, month + 1, dayOfMonth).format(dateFormatter)), Integer.parseInt(dates[2]), getMonthValue(dates[1]) + 1, Integer.parseInt(dates[0]));
+            dialog.show();
+        });
+        pickTimeBtn.setOnClickListener(timeDialog -> {
+            TimePickerDialog dialog = new TimePickerDialog(requireContext(), (view1, hourOfDay, minute) -> timeInput.setText(LocalTime.of(hourOfDay, minute).format(timeFormatter)), Integer.parseInt(times[0]), Integer.parseInt(times[1]), true);
+            dialog.show();
+        });
+        commentInput.setText(observation.getObservationComment());
+        final boolean[] update_image = new boolean[1];
+        if (observation.getObservationImage() != null && !observation.getObservationImage().equals("")) {
+            imageView.setImageBitmap(loadFromInternalStorage(observation.getObservationImage()));
+            imageView.setOnClickListener(v12 -> {
+                pickImage();
+                update_image[0] = true;
+            });
+        } else {
+            imageView.setOnClickListener(v12 -> {
+                Toast.makeText(requireContext(), "Please add new observation with image", Toast.LENGTH_SHORT).show();
+            });
+        }
+        //Add view to layout
+        observationInputArea.removeAllViews();
+        observationInputArea.addView(observationInputView);
+        observationBtn.setText(R.string.update_observation);
+        observationBtn.setOnClickListener(v1 -> {
+            observation.setObservationType(observationTypeSpinner.getSelectedItem().toString());
+            observation.setObservationTime(dateInput.getText().toString().trim() + ", " + timeInput.getText().toString().trim());
+            String comment = null, image = null;
+            if (!isEmpty(commentInput))
+                observation.setObservationComment(commentInput.getText().toString());
+            //If image is updated
+            if (update_image[0]) {
+                image = saveToInternalStorage(imageBitmap, observationTypeSpinner.getSelectedItem().toString());
+                File imageFile = new File(requireContext().getFilesDir(), observation.getObservationImage());
+                imageFile.delete();
+                observation.setObservationImage(image);
+            }
+            try {
+                Runnable updateObservation = () -> db.observationDao().updateObservation(observation);
+                executors.execute(updateObservation);
+                observationBtn.setOnClickListener(v2 -> setUpObservationInput());
+                observationBtn.setText(R.string.add_observation);
+                observationInputArea.removeAllViews();
+                Toast.makeText(requireContext(), "Successfully updated observation " + observation.getObservationType(), Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(requireContext(), "Error updating observation " + observation.getObservationType(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getLocation() {
+        try {
+            locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
+            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+                ActivityCompat.requestPermissions(requireActivity(), permissions, 100);
+                return;
+            }
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5, this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        longInput.setText(String.valueOf(location.getLongitude()));
+        latInput.setText(String.valueOf(location.getLatitude()));
+        try{
+            Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            String address = addresses.get(0).getAddressLine(0);
+            Toast.makeText(requireContext(), "Address " + address, Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

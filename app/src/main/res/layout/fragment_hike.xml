@@ -33,8 +33,6 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/nameInputLayout"
                 style="@style/TextField"
-                app:startIconDrawable="@drawable/ic_baseline_hiking"
-                app:startIconTint="@color/white"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
@@ -46,15 +44,17 @@
                 app:counterTextColor="@color/white"
                 app:endIconMode="clear_text"
                 app:endIconTint="@color/white"
+                app:errorEnabled="true"
                 app:helperText="* Required"
                 app:helperTextEnabled="true"
                 app:helperTextTextColor="@android:color/holo_orange_light"
                 app:hintAnimationEnabled="true"
                 app:hintEnabled="true"
-                app:errorEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/hikeTitle">
+                app:layout_constraintTop_toBottomOf="@+id/hikeTitle"
+                app:startIconDrawable="@drawable/ic_baseline_hiking"
+                app:startIconTint="@color/white">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/nameInput"
@@ -68,8 +68,6 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/locationInputLayout"
                 style="@style/TextField"
-                app:startIconDrawable="@drawable/ic_baseline_location"
-                app:startIconTint="@color/white"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
@@ -82,15 +80,17 @@
                 app:endIconDrawable="@drawable/ic_baseline_clear_text"
                 app:endIconMode="clear_text"
                 app:endIconTint="@color/white"
+                app:errorEnabled="true"
                 app:helperText="* Required"
                 app:helperTextEnabled="true"
                 app:helperTextTextColor="@android:color/holo_orange_light"
                 app:hintAnimationEnabled="true"
                 app:hintEnabled="true"
-                app:errorEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/nameInputLayout">
+                app:layout_constraintTop_toBottomOf="@+id/nameInputLayout"
+                app:startIconDrawable="@drawable/ic_baseline_location"
+                app:startIconTint="@color/white">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/locationInput"
@@ -107,14 +107,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="12dp"
+                android:drawablePadding="2dp"
                 android:text="@string/hike_date"
                 android:textColor="@color/white"
                 android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/locationInputLayout"
                 app:drawableLeftCompat="@drawable/ic_baseline_date"
-                android:drawablePadding="2dp"
-                app:drawableTint="@color/white" />
+                app:drawableTint="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/locationInputLayout" />
 
             <DatePicker
                 android:id="@+id/datePicker"
@@ -187,11 +187,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="12dp"
+                android:drawablePadding="2dp"
                 android:text="@string/hike_difficulty"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 app:drawableLeftCompat="@drawable/ic_baseline_difficulty"
-                android:drawablePadding="2dp"
                 app:drawableTint="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/lengthInputLayout" />
@@ -263,11 +263,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:layout_marginStart="32dp"
+                android:buttonTint="@color/white"
                 android:hint="@string/remove"
                 android:text="@string/satellite_communicator"
-                android:textSize="16sp"
                 android:textColor="@color/white"
-                android:buttonTint="@color/white"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/equipmentText" />
 
@@ -276,11 +276,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:layout_marginStart="32dp"
+                android:buttonTint="@color/white"
                 android:hint="@string/remove"
                 android:text="@string/trekking_poles"
-                android:textSize="16sp"
                 android:textColor="@color/white"
-                android:buttonTint="@color/white"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/satelliteCB" />
 
@@ -289,11 +289,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:layout_marginStart="32dp"
+                android:buttonTint="@color/white"
                 android:hint="@string/remove"
                 android:text="@string/headlamp"
-                android:textSize="16sp"
                 android:textColor="@color/white"
-                android:buttonTint="@color/white"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/polesCB" />
 
@@ -302,11 +302,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:layout_marginStart="32dp"
+                android:buttonTint="@color/white"
                 android:hint="@string/remove"
                 android:text="@string/water_filtration_system"
-                android:textSize="16sp"
                 android:textColor="@color/white"
-                android:buttonTint="@color/white"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/headlampCB" />
 
@@ -315,11 +315,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:layout_marginStart="32dp"
+                android:buttonTint="@color/white"
                 android:hint="@string/remove"
                 android:text="@string/gps_map"
-                android:textSize="16sp"
                 android:textColor="@color/white"
-                android:buttonTint="@color/white"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/waterCB" />
 
@@ -328,11 +328,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:layout_marginStart="32dp"
+                android:buttonTint="@color/white"
                 android:hint="@string/remove"
                 android:text="@string/battery_backup"
-                android:textSize="16sp"
                 android:textColor="@color/white"
-                android:buttonTint="@color/white"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/gpsCB" />
 
@@ -341,11 +341,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:layout_marginStart="32dp"
+                android:buttonTint="@color/white"
                 android:hint="@string/remove"
                 android:text="@string/other"
-                android:textSize="16sp"
                 android:textColor="@color/white"
-                android:buttonTint="@color/white"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/batteryCB" />
 
@@ -393,16 +393,16 @@
                 android:layout_marginEnd="32dp"
                 android:hint="@string/number_of_participants"
                 android:visibility="visible"
-                app:helperText="* Required"
-                app:helperTextEnabled="true"
-                app:helperTextTextColor="@android:color/holo_orange_light"
                 app:boxStrokeWidth="2dp"
                 app:endIconDrawable="@drawable/ic_baseline_clear_text"
                 app:endIconMode="clear_text"
                 app:endIconTint="@color/white"
+                app:errorEnabled="true"
+                app:helperText="* Required"
+                app:helperTextEnabled="true"
+                app:helperTextTextColor="@android:color/holo_orange_light"
                 app:hintAnimationEnabled="true"
                 app:hintEnabled="true"
-                app:errorEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/otherEquipmentInputLayout"
@@ -428,23 +428,23 @@
                 android:layout_marginEnd="32dp"
                 android:hint="@string/hike_duration"
                 android:visibility="visible"
-                app:helperText="* Required"
-                app:helperTextEnabled="true"
-                app:helperTextTextColor="@android:color/holo_orange_light"
                 app:boxStrokeWidth="2dp"
                 app:endIconDrawable="@drawable/ic_baseline_clear_text"
                 app:endIconMode="clear_text"
                 app:endIconTint="@color/white"
+                app:errorEnabled="true"
+                app:helperText="* Required"
+                app:helperTextEnabled="true"
+                app:helperTextTextColor="@android:color/holo_orange_light"
                 app:hintAnimationEnabled="true"
                 app:hintEnabled="true"
-                app:errorEnabled="true"
-                app:suffixText="hours"
-                app:suffixTextColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/participantsInputLayout"
                 app:startIconDrawable="@drawable/ic_baseline_duration"
-                app:startIconTint="@color/white">
+                app:startIconTint="@color/white"
+                app:suffixText="hours"
+                app:suffixTextColor="@color/white">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/durationInput"
@@ -472,9 +472,9 @@
 
             <LinearLayout
                 android:id="@+id/addedObservationArea"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/observationTitle">
@@ -498,10 +498,10 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="32dp"
                 android:backgroundTint="@color/white"
+                android:text="@string/save"
                 android:textColor="@color/lavender"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:text="@string/save"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/observationInputArea" />
 

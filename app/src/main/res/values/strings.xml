@@ -59,6 +59,9 @@
     <string name="observations">Observations</string>
     <string name="delete_observation">Delete observation</string>
     <string name="search_for_hike">Search for hike</string>
+    <string name="update_observation">Update observation</string>
+    <string name="latitude">Latitude</string>
+    <string name="longtitude">Longtitude</string>
 
     <string-array name="difficulty">
         <item>1 - Easy</item>
@@ -81,7 +84,7 @@
         <item>by location</item>
         <item>by length</item>
         <item>by date</item>
-        <item>observation</item>
+        <item>has observation</item>
     </string-array>
 
 </resources>

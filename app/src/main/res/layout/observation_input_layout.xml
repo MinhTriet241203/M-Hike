@@ -137,6 +137,60 @@
         app:layout_constraintTop_toBottomOf="@+id/timeInputLayout" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/longInputLayout"
+        style="@style/TextField"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="4dp"
+        android:hint="@string/longtitude"
+        app:boxStrokeWidth="2dp"
+        app:hintAnimationEnabled="true"
+        app:hintEnabled="true"
+        app:layout_constraintEnd_toStartOf="@+id/timeInputLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pickDateBtn">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/longInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:inputType="none"
+            android:text=""
+            android:textColorHint="@color/white" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/latInputLayout"
+        style="@style/TextField"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="32dp"
+        android:hint="@string/latitude"
+        app:boxStrokeWidth="2dp"
+        app:hintAnimationEnabled="true"
+        app:hintEnabled="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/longInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/pickTimeBtn">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/latInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:inputType="none"
+            android:text=""
+            android:textColorHint="@color/white" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/commentInputLayout"
         style="@style/TextField"
         app:startIconDrawable="@drawable/ic_baseline_comment"
@@ -157,7 +211,7 @@
         app:hintEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pickDateBtn">
+        app:layout_constraintTop_toBottomOf="@+id/longInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/commentInput"
