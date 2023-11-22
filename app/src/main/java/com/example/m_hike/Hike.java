@@ -7,7 +7,9 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "hikes", indices = {@Index(value = {"hike_name"}, unique = true)})
+@Entity(tableName = "hikes",
+        indices = {@Index(value = {"hike_name"},
+                unique = true)})
 public class Hike {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "hike_id")

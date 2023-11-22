@@ -7,8 +7,6 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import org.jetbrains.annotations.NotNull;
-
 @Entity(tableName = "observations", foreignKeys = @ForeignKey(entity = Hike.class, parentColumns = "hike_id", childColumns = "hikeId", onDelete = 5, onUpdate = 5),
         indices = @Index(value = {"hikeId"}))
 public class Observation {

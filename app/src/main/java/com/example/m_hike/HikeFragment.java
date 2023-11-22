@@ -10,14 +10,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageDecoder;
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Looper;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -43,11 +41,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -411,21 +407,26 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
 
     private void setUpObservationInput() {
         if (new_observation && hikeId != 0) {
-            //Save observation
+            //Get observation inforation
             String comment = null, image = null;
             if (!isEmpty(commentInput))
                 comment = commentInput.getText().toString();
             if (image_set)
                 image = saveToInternalStorage(imageBitmap, observationTypeSpinner.getSelectedItem().toString());
-            Observation observation = new Observation(observationTypeSpinner.getSelectedItem().toString(), dateInput.getText().toString() + ", " + timeInput.getText().toString(), comment, image, longitude, latitude, hikeId);
+            Observation observation = new Observation(observationTypeSpinner.getSelectedItem().toString(),
+                    dateInput.getText().toString() + ", " + timeInput.getText().toString(),
+                    comment, image, longitude, latitude, hikeId);
             try {
+                //Save observation to db and get id
                 observation.setObservationId((int) db.observationDao().insertObservation(observation));
             } catch (Exception e) {
                 Toast.makeText(requireContext(), "Error saving observation", Toast.LENGTH_SHORT).show();
                 return;
             }
             Toast.makeText(requireContext(), "Successfully saved observation with id " + observationId, Toast.LENGTH_SHORT).show();
+            //Show added observation to the UI
             if (image_set) {
+                //Show observation with image
                 View addedObservationImageItem = getLayoutInflater().inflate(R.layout.observation_added_image_layout, addedObservationArea, false);
                 observationType = addedObservationImageItem.findViewById(R.id.observationType);
                 observationDateTime = addedObservationImageItem.findViewById(R.id.observationDateTime);
@@ -438,18 +439,25 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                 observationDateTime.setText(String.format("at %s", observation.getObservationTime().trim()));
                 observationLocation.setText(String.format("on %s", getLocationFromLatLong(observation.getObservationLatitude(), observation.getObservationLongitude())));
                 observationImage.setImageBitmap(imageBitmap);
+                //Set up delete observation button
                 deleteObservationBtn.setOnClickListener(v1 -> {
+                    //Delete observation from db
                     deleteObservation(observation);
+                    //Delete observation image file
+                    assert observation.getObservationImage() != null;
                     File imageFile = new File(requireContext().getFilesDir(), observation.getObservationImage());
                     imageFile.delete();
+                    //Remove view for deleted observation and input layout
                     addedObservationArea.removeView(addedObservationImageItem);
                     observationInputArea.removeAllViews();
+                    //Set up observation button
                     observationBtn.setText(R.string.add_observation);
                     observationBtn.setOnClickListener(v -> setUpObservationInput());
                 });
                 observationBackground.setOnClickListener(v -> updateObservation(observation));
                 addedObservationArea.addView(addedObservationImageItem);
             } else {
+                //Show observation without image
                 View addedObservationItem = getLayoutInflater().inflate(R.layout.observation_added_layout, addedObservationArea, false);
                 observationType = addedObservationItem.findViewById(R.id.observationType);
                 observationDateTime = addedObservationItem.findViewById(R.id.observationDateTime);
@@ -460,10 +468,14 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                 observationType.setText(observation.getObservationType());
                 observationDateTime.setText(String.format("at %s", observation.getObservationTime().trim()));
                 observationLocation.setText(String.format("on %s", getLocationFromLatLong(observation.getObservationLatitude(), observation.getObservationLongitude())));
+                //Set up delete observation button
                 deleteObservationBtn.setOnClickListener(v1 -> {
+                    //Delete observation from db
                     deleteObservation(observation);
+                    //Remove view for deleted observation and input layout
                     addedObservationArea.removeView(addedObservationItem);
                     observationInputArea.removeAllViews();
+                    //Set up observation button
                     observationBtn.setText(R.string.add_observation);
                     observationBtn.setOnClickListener(v -> setUpObservationInput());
                 });
@@ -479,43 +491,55 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
             observationBtn.setText(R.string.add_observation);
         } else {
             //Set up to input new observation
+
             //Set spinner adapter
             observationTypeSpinner.setAdapter(observationTypeAdapter);
-
             //Set text current date time
             dateInput.setText(LocalDateTime.now().format(dateFormatter));
             timeInput.setText(LocalDateTime.now().format(timeFormatter));
+            //Set up comment input
             commentInput.setText("");
             //Setup date and time button click
             pickDateBtn.setOnClickListener(dateDialog -> {
-                DatePickerDialog dialog = new DatePickerDialog(requireContext(), (datePicker, year, month, dayOfMonth) -> dateInput.setText(LocalDate.of(year, month + 1, dayOfMonth).format(dateFormatter)), LocalDate.now().getYear(), LocalDate.now().getMonthValue(), LocalDate.now().getDayOfMonth());
+                DatePickerDialog dialog = new DatePickerDialog(requireContext(),
+                        (datePicker, year, month, dayOfMonth) -> dateInput.setText(LocalDate.of(year, month + 1, dayOfMonth).format(dateFormatter)),
+                        LocalDate.now().getYear(), LocalDate.now().getMonthValue(), LocalDate.now().getDayOfMonth());
                 dialog.show();
             });
             pickTimeBtn.setOnClickListener(timeDialog -> {
-                TimePickerDialog dialog = new TimePickerDialog(requireContext(), (view1, hourOfDay, minute) -> timeInput.setText(LocalTime.of(hourOfDay, minute).format(timeFormatter)), LocalTime.now().getHour(), LocalTime.now().getMinute(), true);
+                TimePickerDialog dialog = new TimePickerDialog(requireContext(),
+                        (view1, hourOfDay, minute) -> timeInput.setText(LocalTime.of(hourOfDay, minute).format(timeFormatter)),
+                        LocalTime.now().getHour(), LocalTime.now().getMinute(), true);
                 dialog.show();
             });
+            //Get and set button for location
             getLocation();
             pickNewLocationBtn.setOnClickListener(v -> getLocation());
+            //Change to default image
             imageView.setImageResource(R.drawable.ic_baseline_add_photo);
             imageView.setOnClickListener(v12 -> pickImage());
             //Add view to layout
             observationInputArea.addView(observationInputView);
+            //Set up observation button and
             observationBtn.setText(R.string.save_observation);
             new_observation = true;
         }
     }
 
+    //Check if EditText is empty
     private boolean isEmpty(EditText input) {
         return input.getText().toString().trim().length() == 0;
     }
 
+    //Launch intent to pick image
     private void pickImage() {
         Intent intent = new Intent(MediaStore.ACTION_PICK_IMAGES);
         resultLauncher.launch(intent);
     }
 
+    //Save image to storage and return file name
     private String saveToInternalStorage(Bitmap bitmapImage, String observationName) {
+        //Generate file path
         File directory = requireContext().getFilesDir();
         String fileName = observationName + "_" + System.currentTimeMillis() + ".png";
         File path = new File(directory, fileName);
@@ -523,12 +547,13 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(path);
-            // Use the compress method on the BitMap object to write image to the OutputStream
+            //Use compress method on BitMap object to write image to OutputStream
             bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
         } catch (Exception e) {
             Toast.makeText(requireContext(), "Error saving image", Toast.LENGTH_SHORT).show();
         } finally {
             try {
+                //Close OutputStream
                 assert fos != null;
                 fos.close();
             } catch (IOException e) {
@@ -538,6 +563,7 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         return fileName;
     }
 
+    //Delete hike confirmation
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(requireContext(), v);
         popup.setOnMenuItemClickListener(this::onMenuItemClick);
@@ -545,6 +571,7 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         popup.show();
     }
 
+    //Execute delete hike and go back to list page
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.yesItem) {
@@ -555,22 +582,25 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         } else return item.getItemId() == R.id.noItem;
     }
 
-    //Database methods
+    //Update hike
     private void updateHike(Hike hike) {
         Runnable updateHike = () -> db.hikeDao().updateHike(hike);
         executors.execute(updateHike);
     }
 
+    //Delete hike
     private void deleteHike(Hike hike) {
         Runnable deleteHike = () -> db.hikeDao().deleteHike(hike);
         executors.execute(deleteHike);
     }
 
+    //Delete observation
     private void deleteObservation(Observation observation) {
         Runnable deleteObservation = () -> db.observationDao().deleteObservation(observation);
         executors.execute(deleteObservation);
     }
 
+    //Load image file from storage
     private Bitmap loadFromInternalStorage(String fileName) {
         File path = requireContext().getFilesDir();
         try {
@@ -582,6 +612,7 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         return null;
     }
 
+    //Get index of observation in spinner
     private int getObservationTypeIndex(String observationType) {
         switch (observationType) {
             case "Animals sighting":
@@ -598,6 +629,7 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         return 0;
     }
 
+    //Get month value from month name
     private int getMonthValue(String monthName) {
         switch (monthName) {
             case "Jan":
@@ -628,6 +660,7 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         return LocalDate.now().getMonthValue();
     }
 
+    //Update observation
     private void updateObservation(Observation observation) {
         //Set up form to update observation
         //Set spinner adapter and selected item
@@ -648,29 +681,34 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
             TimePickerDialog dialog = new TimePickerDialog(requireContext(), (view1, hourOfDay, minute) -> timeInput.setText(LocalTime.of(hourOfDay, minute).format(timeFormatter)), Integer.parseInt(times[0]), Integer.parseInt(times[1]), true);
             dialog.show();
         });
+        //Get current location and allow pick new location
         getLocation();
         pickNewLocationBtn.setOnClickListener(v -> getLocation());
+        //Set comment
         commentInput.setText(observation.getObservationComment());
+        //Check if observation has image
         final boolean[] update_image = new boolean[1];
         if (observation.getObservationImage() != null && !observation.getObservationImage().equals("")) {
+            //Show image bitmap file
             imageView.setImageBitmap(loadFromInternalStorage(observation.getObservationImage()));
+            //Allow pick image
             imageView.setOnClickListener(v12 -> {
                 pickImage();
                 update_image[0] = true;
             });
         } else {
-            imageView.setOnClickListener(v12 -> {
-                Toast.makeText(requireContext(), "Please add new observation with image", Toast.LENGTH_SHORT).show();
-            });
+            imageView.setOnClickListener(v12 -> Toast.makeText(requireContext(), "Please add new observation with image", Toast.LENGTH_SHORT).show());
         }
         //Add view to layout
         observationInputArea.removeAllViews();
         observationInputArea.addView(observationInputView);
+        //Set up observation button text and click listener
         observationBtn.setText(R.string.update_observation);
         observationBtn.setOnClickListener(v1 -> {
+            //Set observation fields
             observation.setObservationType(observationTypeSpinner.getSelectedItem().toString());
             observation.setObservationTime(dateInput.getText().toString().trim() + ", " + timeInput.getText().toString().trim());
-            String comment = null, image = null;
+            String image;
             if (!isEmpty(commentInput))
                 observation.setObservationComment(commentInput.getText().toString());
             //If image is updated
@@ -681,10 +719,13 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
                 observation.setObservationImage(image);
             }
             try {
+                //Update observation in database
                 Runnable updateObservation = () -> db.observationDao().updateObservation(observation);
                 executors.execute(updateObservation);
+                //Change observation button back to add observation
                 observationBtn.setOnClickListener(v2 -> setUpObservationInput());
                 observationBtn.setText(R.string.add_observation);
+                //Remove observation input form
                 observationInputArea.removeAllViews();
                 Toast.makeText(requireContext(), "Successfully updated observation " + observation.getObservationType(), Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
@@ -693,41 +734,55 @@ public class HikeFragment extends Fragment implements androidx.appcompat.widget.
         });
     }
 
+    //Get location
     private void getLocation() {
         try {
+            //Check location permission is granted
             locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
             if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                //If not granted then ask for permission
                 String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
                 ActivityCompat.requestPermissions(requireActivity(), permissions, 100);
                 return;
             }
+            //Request location update and call onLocationChange
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5, this);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
+    //Check and show location
     @Override
     public void onLocationChanged(@NonNull Location location) {
+        //Get lat and long
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         try{
+            //Get address
             Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
             List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-            String address = addresses.get(0).getAddressLine(0);
+            String address = null;
+            if (addresses != null) {
+                address = addresses.get(0).getAddressLine(0);
+            }
+            //Show to users
             observationLocationInput.setText(address);
         } catch (Exception e) {
             Toast.makeText(requireContext(), "Cannot get address, please try again.", Toast.LENGTH_SHORT).show();
         }
     }
 
+    //Get address from lat and long
     private String getLocationFromLatLong(double latitude, double longitude) {
         try{
+            //Get address
             Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            return addresses.get(0).getAddressLine(0);
+            if (addresses != null) {
+                return addresses.get(0).getAddressLine(0);
+            }
         } catch (Exception e) {
             Toast.makeText(requireContext(), "Cannot get address, please try again.", Toast.LENGTH_SHORT).show();
         }

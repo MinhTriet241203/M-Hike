@@ -14,4 +14,5 @@
         android:id="@+id/hike"
         android:title="@string/hike"
         android:icon="@drawable/ic_baseline_hiking"/>
+
 </menu>
